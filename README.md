@@ -58,15 +58,39 @@ AI와 함께 다섯 단계로 만듭니다. 각 단계는 `prompts/` 폴더의 �
 2. 나온 개선 작업을 4단계 프롬프트로 구현합니다. 설계 자체를 고쳐야 하면 해당 단계로 돌아갑니다.
 3. 2~4주마다 반복합니다.
 
+## 앱 실행하기
+
+4단계 구현이 진행 중입니다. 지금은 **체크인 → 추천 → 연습 3개(생리적 한숨, 5-4-3-2-1 그라운딩, STOP)**와 위기 안내가 동작합니다.
+
+필요한 것: Node.js 22 이상
+
+```bash
+npm install        # 처음 한 번
+npm run dev        # 개발 서버 → 터미널에 나오는 주소(보통 http://localhost:5173)를 브라우저로 열기
+```
+
+| 명령 | 하는 일 |
+|---|---|
+| `npm run dev` | 개발 서버 (코드를 고치면 바로 반영) |
+| `npm run build` | 타입 검사 → 배포용 빌드(`dist/`) → 외부 주소 검사 |
+| `npm run preview` | 빌드 결과를 http://localhost:4173 에서 열기 (오프라인·설치 기능 확인용) |
+| `npm test` | 로직·안전·콘텐츠·저장소 테스트 |
+| `npm run e2e` | 실제 브라우저로 주요 흐름 테스트 |
+
+휴대폰에 설치하는 방법(GitHub Pages 배포)은 구현 계획의 작업 15에서 추가합니다.
+
 ## 폴더 구조
 
 ```
 prompts/        단계별 프롬프트 (1~5단계)
-docs/           각 단계의 결과물을 저장할 곳 (직접 만들어 사용)
-  01-framework.md
-  02-modules/
-  03-design.md
-  backlog.md    MVP 범위 밖 아이디어
+docs/           각 단계의 결과물
+  01-framework.md   1단계: 통합 프레임워크
+  02-modules/       2단계: 모듈 스크립트 (콘텐츠의 원본)
+  03-design.md      3단계: 데이터·시스템 설계
+  backlog.md        MVP 범위 밖 아이디어
+content/        앱이 읽는 콘텐츠 JSON (docs/02-modules를 옮긴 것)
+src/            앱 코드 (safety, domain, db, content, player, screens, ui)
+tests/          단위·e2e 테스트
 ```
 
 ## 모든 단계에 공통된 원칙

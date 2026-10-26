@@ -586,7 +586,7 @@ function applyPersonalization(candidates, state, history):
 - 위기 화면이 열린 기록은 `crisisEvents`에 남기되, 열린 이유 외의 내용은 저장하지 않습니다. 이 기록은 5단계 점검의 안전 점검 항목에서 씁니다.
 
 ### 5.4 구현 방법
-- `src/safety/` 폴더에 모든 판정 함수와 위기 화면을 모읍니다. 다른 폴더는 `src/safety/`를 불러 쓸 수 있지만, `src/safety/`는 다른 기능 폴더를 불러오지 않습니다(의존 방향 고정).
+- `src/safety/` 폴더에 모든 판정 함수와 위기 화면을 모읍니다. 다른 폴더는 `src/safety/`를 불러 쓸 수 있지만, `src/safety/`는 순수 로직(`src/domain/`) 외의 기능 폴더를 불러오지 않습니다(의존 방향 고정).
 - `evaluateSafety(state) → SafetyAction | null`은 순수 함수입니다. 체크인·저녁 기록·척도·모듈 종료를 저장할 때마다, 그리고 앱을 열 때마다 호출합니다.
 - 위기 화면 컴포넌트와 연락처 문자열은 코드에 직접 들어갑니다(콘텐츠 JSON에서 읽지 않음). 서비스 워커의 사전 캐시 목록에 반드시 포함합니다.
 - 4단계 테스트: PHQ-9 9번 0/1/2/3 각각, 기분 2점 3일 연속과 2일 연속, 하루 경계(새벽 4시) 전후, 데이터베이스 열기 실패 시 위기 버튼 동작, 오프라인 상태에서 위기 화면 열기.
@@ -702,7 +702,7 @@ MVP는 외부로 아무것도 보내지 않습니다. 나중에 AI API 등을 �
 | 언어 | TypeScript | 콘텐츠·기록의 형식을 타입으로 검사 |
 | 빌드 | Vite | 설정이 단순하고 빠름 |
 | UI | React 18 | 자료와 예제가 가장 많음 |
-| 라우팅 | React Router | |
+| 라우팅 | React Router (HashRouter, 주소가 `/#/checkin` 형태) | GitHub Pages는 하위 경로 새로고침 시 404가 나므로, 서버 설정 없이 동작하는 해시 주소를 씀 |
 | 저장소 | Dexie (IndexedDB 래퍼) | 버전별 스키마 이전(migration) 지원 |
 | PWA | vite-plugin-pwa (Workbox) | 서비스 워커 사전 캐시, 설치 |
 | 스타일 | 일반 CSS + CSS 변수(디자인 토큰) | 외부 라이브러리 없이 다크 모드·글자 크기 조절 |
@@ -739,7 +739,7 @@ MVP는 외부로 아무것도 보내지 않습니다. 나중에 AI API 등을 �
 └── prompts/
 ```
 
-**의존 방향**: `screens → player, domain, db, content, safety`, `player → domain, content, safety`, `domain → (없음)`, `safety → (없음)`. `domain`과 `safety`는 React와 Dexie를 모르는 순수 TypeScript라서 단독으로 테스트할 수 있습니다.
+**의존 방향**: `screens → player, domain, db, content, safety`, `player → domain, content, safety`, `domain → (없음)`, `safety → domain`(날짜 계산과 타입만). `domain`과 `safety`의 판정 함수는 React와 Dexie를 모르는 순수 TypeScript라서 단독으로 테스트할 수 있습니다. 위기 화면 컴포넌트는 `db`에 의존하지 않습니다(위기 기록 저장은 화면 바깥의 버튼 처리에서 하고, 실패해도 화면은 열림).
 
 ### 7.5 오프라인과 시간
 - 서비스 워커가 앱 파일과 `content/` 전체를 사전 캐시합니다. 첫 방문 후에는 비행기 모드에서도 모든 기능이 동작해야 합니다.
