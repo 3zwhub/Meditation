@@ -1,14 +1,9 @@
 // 분기마다 결과가 달라지는 경우 (작업 7)
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { forward, startModule } from './helpers';
 
-const next = (page: Page) => page.locator('.player-footer').last().locator('button').last();
-
-async function start(page: Page, path: string) {
-  await page.goto(`/#/m/${path}`);
-  const noScore = page.getByRole('button', { name: '점수 없이 바로 시작' });
-  if (await noScore.isVisible()) await noScore.click();
-  else await page.getByRole('button', { name: '시작하기' }).click();
-}
+const next = forward;
+const start = startModule;
 
 test('DB03: 실제 위험이 있다고 답하면 반대 행동 없이 끝나고, "한 걸음 다가갔어요"를 보여주지 않는다', async ({ page }) => {
   await start(page, 'DB03/minimal');
