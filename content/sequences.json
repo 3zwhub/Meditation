@@ -1,0 +1,115 @@
+[
+  {
+    "id": "SEQ1",
+    "state": "A",
+    "title": "몸이 먼저 반응할 때",
+    "duration": "3~4분",
+    "why": "각성이 높을 때는 몸 안의 감각보다 바깥 감각이 덜 부담스러워요. 먼저 주변으로 주의를 옮기고, 숨으로 몸을 정돈한 뒤, 여유가 생기면 감정에 이름을 붙여요.",
+    "end": "목표는 불안 0점이 아니에요. 하던 일로 돌아갈 수 있으면 충분해요.",
+    "steps": [
+      {
+        "module": "GR01",
+        "variant": "minimal"
+      },
+      {
+        "module": "BR01",
+        "variant": "minimal"
+      },
+      {
+        "module": "CB01",
+        "variant": "minimal"
+      }
+    ]
+  },
+  {
+    "id": "SEQ2",
+    "state": "B",
+    "title": "걱정이 멈추지 않을 때",
+    "duration": "4~5분",
+    "why": "걱정이 맴돌 때는 답을 찾기보다 확인하고 검색하는 걸 먼저 멈추는 게 도움이 돼요. 그다음 생각의 종류에 따라 따져볼지, 거리를 둘지 골라요.",
+    "end": "걱정이 다 풀리지 않아도 괜찮아요. 걱정에 끌려다니지 않고, 내가 고른 방법으로 다뤘어요.",
+    "steps": [
+      {
+        "module": "DB02",
+        "variant": "basic"
+      },
+      {
+        "module": "CB01",
+        "variant": "basic"
+      },
+      {
+        "module": "CB02",
+        "variant": "minimal",
+        "if": "checkin.thoughtKind == 'prediction'"
+      },
+      {
+        "module": "AC01",
+        "variant": "minimal",
+        "if": "checkin.thoughtKind != 'prediction'"
+      }
+    ]
+  },
+  {
+    "id": "SEQ3",
+    "state": "C",
+    "title": "피하고 싶은 일 앞에서",
+    "duration": "계획 4~5분 + 실행",
+    "why": "숨만 고르고 끝내면 진정이 또 다른 회피가 될 수 있어요. 불안이 있어도 움직일 이유를 확인하고, 작은 한 걸음으로 걱정했던 일이 실제로 일어나는지 확인해요.",
+    "end": "한 걸음 다가갔어요. 중요한 건 불안 점수가 아니라 예상과 실제의 차이예요.",
+    "steps": [
+      {
+        "module": "BR02",
+        "variant": "minimal"
+      },
+      {
+        "module": "AC03",
+        "variant": "basic"
+      },
+      {
+        "module": "DB03",
+        "variant": "basic"
+      }
+    ]
+  },
+  {
+    "id": "SEQ4",
+    "state": "D",
+    "title": "감정이 폭주할 때",
+    "duration": "4~5분",
+    "why": "감정이 아주 클 때는 생각하는 기술이 잘 작동하지 않아요. 몸을 먼저 진정시키고, 그다음 충동과 행동 사이에 틈을 만들어요.",
+    "end": "지금은 중요한 결정을 미뤄도 괜찮아요. 내일 다시 생각해도 늦지 않아요.",
+    "steps": [
+      {
+        "module": "DB01",
+        "variant": "basic"
+      },
+      {
+        "module": "DB02",
+        "variant": "basic"
+      }
+    ]
+  },
+  {
+    "id": "SEQ5",
+    "state": "E",
+    "title": "기운이 없는 날",
+    "duration": "3분 + 활동 5분",
+    "why": "기분이 나아지길 기다리기보다 작은 행동이 먼저예요. 바디스캔과 확언은 시작 문턱을 낮추는 짧은 준비예요.",
+    "end": "작은 걸음이었지만, 아무것도 하지 않는 것과는 달라요.",
+    "steps": [
+      {
+        "module": "MD01",
+        "variant": "minimal",
+        "if": "!(checkin.energy <= 2)"
+      },
+      {
+        "module": "AF01",
+        "variant": "minimal"
+      },
+      {
+        "module": "CB05",
+        "variant": "minimal"
+      }
+    ]
+  }
+]

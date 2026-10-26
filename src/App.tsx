@@ -13,6 +13,7 @@ import { Home } from './screens/Home';
 import { Modules } from './screens/Modules';
 import { Recommend } from './screens/Recommend';
 import { Routine } from './screens/Routine';
+import { Sequence } from './screens/Sequence';
 import { Settings } from './screens/Settings';
 import { Weekly } from './screens/Weekly';
 import { ONBOARDING_KEY, Welcome } from './screens/Welcome';
@@ -61,7 +62,7 @@ function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   useOnboardingGate();
-  const inPlayer = ['/m/', '/routine/', '/welcome'].some((p) => location.pathname.startsWith(p));
+  const inPlayer = ['/m/', '/routine/', '/welcome', '/sequence/'].some((p) => location.pathname.startsWith(p));
   const onCrisis = location.pathname === '/crisis';
   return (
     <div className="app">
@@ -88,6 +89,7 @@ function Layout() {
           <Route path="/assess/:instrument" element={<AssessmentRoute />} />
           <Route path="/week" element={<Weekly />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/sequence/:id/:index" element={<Sequence />} />
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/welcome/:step" element={<Welcome />} />
           <Route path="/approach/:id" element={<ApproachResult />} />

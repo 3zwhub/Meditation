@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getModule } from '../content/load';
+import { getModule, sequenceForState } from '../content/load';
 import { getRecommendation, updateRecommendation } from '../db/repo';
 import type { RecPick, RecommendationRecord } from '../domain/types';
 import type { PlayerContext } from '../player/ModulePlayer';
+import type { SequenceStart } from './Sequence';
 
 export function Recommend() {
   const { id } = useParams();
@@ -38,6 +39,8 @@ export function Recommend() {
   };
 
   const primary = getModule(rec.primary.module);
+  // 1순위 하나만 하는 것이 기본이고, 시퀀스는 따로 고를 수 있게 둔다 (설계 3.3)
+  const sequence = rec.state ? sequenceForState(rec.state) : undefined;
 
   return (
     <div>
@@ -70,6 +73,20 @@ export function Recommend() {
           );
         })}
       </div>
+      {sequence && (
+        <button
+          type="button"
+          className="choice"
+          style={{ width: '100%', marginTop: 16 }}
+          onClick={async () => {
+            await updateRecommendation(rec.id, { chosen: 'other' }).catch(() => {});
+            navigate(`/sequence/${sequence.id}/0`, { state: { checkinId: rec.checkinId, recommendationId: rec.id } satisfies SequenceStart });
+          }}
+        >
+          시퀀스로 하기: {sequence.title} · {sequence.duration}
+          <small>몇 가지 연습을 정해진 순서로 이어서 해요.</small>
+        </button>
+      )}
       <div className="row" style={{ marginTop: 24, justifyContent: 'space-between' }}>
         <Link className="btn" to="/modules" onClick={() => void updateRecommendation(rec.id, { chosen: 'other' }).catch(() => {})}>
           직접 고르기

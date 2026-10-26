@@ -66,7 +66,8 @@ function templateVars(steps: Step[], answers: Record<string, unknown>): Record<s
 
 /** 루틴(아침·저녁) 안에서 쓰일 때: 마무리 화면에서 다음 순서로 넘어간다. */
 export interface RoutineHooks {
-  onNext: () => void;
+  /** carry: 다음 연습으로 넘겨줄 값 (표준 키) */
+  onNext: (carry: Record<string, unknown>) => void;
   nextLabel: string;
 }
 
@@ -329,7 +330,7 @@ export function ModulePlayer({
           <p className="muted">여기까지 한 것도 연습이에요.</p>
         </div>
         {routine && (
-          <button type="button" className="btn btn-primary btn-block" style={{ marginBottom: 8 }} onClick={routine.onNext}>
+          <button type="button" className="btn btn-primary btn-block" style={{ marginBottom: 8 }} onClick={() => routine.onNext(carryForward(answers))}>
             다음으로 넘어가기
           </button>
         )}
@@ -442,7 +443,7 @@ export function ModulePlayer({
           </div>
         </div>
         {routine ? (
-          <button type="button" className="btn btn-primary btn-block" onClick={routine.onNext}>
+          <button type="button" className="btn btn-primary btn-block" onClick={() => routine.onNext(carryForward(answers))}>
             {routine.nextLabel}
           </button>
         ) : (

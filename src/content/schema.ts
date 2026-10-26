@@ -149,3 +149,16 @@ export const assessmentSchema = z
   .refine((a) => !a.items || (a.source && a.instruction && a.options), '문항이 있으면 출처·지시문·선택지도 있어야 해요');
 
 export type AssessmentContent = z.infer<typeof assessmentSchema>;
+
+// 조합 시퀀스 (2단계 sequences.md). if는 체크인 값으로 정하는 갈림길이다 (설계 1.5 조건식).
+export const sequenceSchema = z.object({
+  id: z.string().regex(/^SEQ\d$/),
+  state: stateId,
+  title: z.string(),
+  duration: z.string(),
+  why: z.string(),
+  end: z.string(),
+  steps: z.array(z.object({ module: id, variant: z.enum(['minimal', 'basic', 'extended']), if: z.string().optional() })).min(2),
+});
+
+export type SequenceContent = z.infer<typeof sequenceSchema>;

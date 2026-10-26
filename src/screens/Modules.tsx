@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { ASSESSMENTS, MODULES, assessmentReady } from '../content/load';
+import { ASSESSMENTS, MODULES, SEQUENCES, assessmentReady } from '../content/load';
 import type { VariantKey } from '../domain/types';
 import type { PlayerContext } from '../player/ModulePlayer';
 
@@ -41,6 +41,15 @@ export function Modules() {
           </div>
         </div>
       ))}
+      <h2>이어서 하는 순서</h2>
+      <div className="stack">
+        {SEQUENCES.map((q) => (
+          <Link key={q.id} className="choice" to={`/sequence/${q.id}/0`}>
+            {q.title} · {q.duration}
+            <small>{q.why}</small>
+          </Link>
+        ))}
+      </div>
       <h2>점수로 돌아보기</h2>
       <p className="muted">지난 2주를 돌아보는 짧은 검사예요. 진단이 아니라 참고 자료예요.</p>
       <div className="row">

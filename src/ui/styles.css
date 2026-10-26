@@ -295,3 +295,4 @@ textarea {
 .switch.on { background: var(--accent); }
 .switch.on::after { left: 21px; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+a.choice { display: block; text-decoration: none; color: var(--text); }

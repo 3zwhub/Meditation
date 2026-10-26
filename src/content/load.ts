@@ -4,10 +4,12 @@ import {
   assessmentSchema,
   lexiconSchema,
   moduleSchema,
+  sequenceSchema,
   type Affirmation,
   type AssessmentContent,
   type Lexicon,
   type ModuleContent,
+  type SequenceContent,
   type Step,
 } from './schema';
 
@@ -16,6 +18,7 @@ const rawModules = import.meta.glob('../../content/modules/*.json', { eager: tru
 const rawLexicons = import.meta.glob('../../content/lexicon/*.json', { eager: true, import: 'default' });
 const rawAffirmations = import.meta.glob('../../content/affirmations.json', { eager: true, import: 'default' });
 const rawAssessments = import.meta.glob('../../content/assessments/*.json', { eager: true, import: 'default' });
+const rawSequences = import.meta.glob('../../content/sequences.json', { eager: true, import: 'default' });
 
 function parseAll<T>(raw: Record<string, unknown>, parse: (d: unknown) => { success: true; data: T } | { success: false; error: { issues: unknown } }): T[] {
   return Object.entries(raw).flatMap(([path, data]) => {
@@ -84,3 +87,10 @@ export const ASSESSMENTS = new Map<string, AssessmentContent>(
 
 /** 공식 한국어판 문항이 들어 있어 실시할 수 있는지. */
 export const assessmentReady = (a: AssessmentContent | undefined) => Boolean(a?.items && a.options && a.instruction && a.source);
+
+export const SEQUENCES: SequenceContent[] = parseAll(rawSequences, (d) => sequenceSchema.array().safeParse(d))
+  .flat()
+  // 들어 있는 모듈만으로 이루어진 시퀀스만 쓴다
+  .filter((q) => q.steps.every((st) => MODULES.has(st.module)));
+
+export const sequenceForState = (state: string) => SEQUENCES.find((q) => q.state === state);

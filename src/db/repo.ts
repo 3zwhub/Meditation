@@ -394,3 +394,7 @@ export async function weeklyData(weekStartDay: string, now = new Date()) {
   const firstUseDay = (await db.sessions.orderBy('localDate').first())?.localDate;
   return { today: day, sessions, checkins, journals, attempts, worryNotes, gad7, firstUseDay };
 }
+
+export async function getCheckin(id: string) {
+  return getDB().checkins.get(id);
+}

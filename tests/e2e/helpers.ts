@@ -56,6 +56,11 @@ export async function startModule(page: Page, path: string) {
   // 같은 주소로 다시 이동하면 화면이 바뀌지 않으므로 홈을 거친다
   await page.goto('/#/');
   await page.goto(`/#/m/${path}`);
+  await beginModule(page);
+}
+
+/** 모듈의 첫 화면(소개와 시작 전 점수)에서 시작한다. */
+export async function beginModule(page: Page) {
   // 화면이 그려진 뒤에 고른다 (그리기 전에 확인하면 시작 전 점수가 있는 모듈을 잘못 판단한다)
   const start = page.getByRole('button', { name: '시작하기', exact: true });
   await expect(start).toBeVisible();
