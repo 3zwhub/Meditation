@@ -2,6 +2,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { affirmationSchema, lexiconSchema, moduleSchema } from '../../src/content/schema';
+import { EVENING_CLOSINGS } from '../../src/domain/routines';
 
 const read = (p: string) => JSON.parse(readFileSync(p, 'utf8'));
 const modules = readdirSync('content/modules').map((f) => moduleSchema.parse(read(`content/modules/${f}`)));
@@ -75,5 +76,12 @@ describe('확언 (AF01)', () => {
 
   it('{가치}가 들어간 문장은 needs에 value가 있다', () => {
     for (const a of list) if (a.text.includes('{가치}')) expect(a.needs).toContain('value');
+  });
+});
+
+describe('저녁 마무리 문장 (JR01)', () => {
+  it('2단계 문서와 같다', () => {
+    const doc = readFileSync('docs/02-modules/JR01.md', 'utf8');
+    for (const c of EVENING_CLOSINGS) expect(doc).toContain(c);
   });
 });

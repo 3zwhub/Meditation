@@ -64,7 +64,23 @@ function templateVars(steps: Step[], answers: Record<string, unknown>): Record<s
   return vars;
 }
 
-export function ModulePlayer({ module, variant, context }: { module: ModuleContent; variant: VariantKey; context: PlayerContext }) {
+/** 루틴(아침·저녁) 안에서 쓰일 때: 마무리 화면에서 다음 순서로 넘어간다. */
+export interface RoutineHooks {
+  onNext: () => void;
+  nextLabel: string;
+}
+
+export function ModulePlayer({
+  module,
+  variant,
+  context,
+  routine,
+}: {
+  module: ModuleContent;
+  variant: VariantKey;
+  context: PlayerContext;
+  routine?: RoutineHooks;
+}) {
   const navigate = useNavigate();
   const { setEmphasis } = useCrisisEmphasis();
   const v = module.variants[variant] ?? module.variants.minimal;
@@ -312,7 +328,12 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
           <p className="say">멈춰도 괜찮아요.</p>
           <p className="muted">여기까지 한 것도 연습이에요.</p>
         </div>
-        <button type="button" className="btn btn-primary btn-block" onClick={() => navigate('/', { replace: true })}>
+        {routine && (
+          <button type="button" className="btn btn-primary btn-block" style={{ marginBottom: 8 }} onClick={routine.onNext}>
+            다음으로 넘어가기
+          </button>
+        )}
+        <button type="button" className={`btn btn-block${routine ? '' : ' btn-primary'}`} onClick={() => navigate('/', { replace: true })}>
           홈으로
         </button>
       </div>
@@ -388,7 +409,8 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   }
 
   if (phase === 'outro') {
-    const suggestions = module.outro.next
+    // 루틴 안에서는 정해진 순서로만 간다
+    const suggestions = (routine ? [] : module.outro.next)
       .filter((n) => n.module && n.module !== module.id && getModule(n.module) && evaluate(n.if, scope))
       .slice(0, 2);
     const reflection = module.outro.reflection;
@@ -419,9 +441,15 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
             })}
           </div>
         </div>
-        <button type="button" className="btn btn-primary btn-block" onClick={() => navigate('/', { replace: true })}>
-          하던 일로 돌아가기
-        </button>
+        {routine ? (
+          <button type="button" className="btn btn-primary btn-block" onClick={routine.onNext}>
+            {routine.nextLabel}
+          </button>
+        ) : (
+          <button type="button" className="btn btn-primary btn-block" onClick={() => navigate('/', { replace: true })}>
+            하던 일로 돌아가기
+          </button>
+        )}
       </div>
     );
   }

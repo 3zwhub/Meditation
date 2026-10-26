@@ -32,9 +32,13 @@ export async function step(page: Page): Promise<boolean> {
 
   const help = page.getByRole('button', { name: '힘들어요' });
   if (!(await help.isVisible())) {
-    // 종료 점수 화면
-    await page.getByRole('button', { name: '건너뛰기' }).click();
-    return false;
+    // 종료 점수 화면이면 건너뛰고, 아니면 루틴 안의 마무리 화면이다
+    const skip = page.getByRole('button', { name: '건너뛰기' });
+    if (await skip.isVisible()) {
+      await skip.click();
+      return false;
+    }
+    return true;
   }
 
   const body = page.locator('.player-body');

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { catalog, getModule } from '../content/load';
-import { getMeta, getSettings, plannedApproachAttempts, recentHistory, setMeta, todayActivity } from '../db/repo';
+import { AFFIRMATIONS, catalog, getModule } from '../content/load';
+import { getMeta, getSettings, latestValue, plannedApproachAttempts, recentHistory, setMeta, todayActivity, todayStatus } from '../db/repo';
 import { localDate } from '../domain/day';
+import { fillAffirmation } from '../domain/affirmations';
 import { quickStartPicks } from '../domain/recommend';
 import { DEFAULT_SETTINGS, type ApproachAttempt } from '../domain/types';
 import { evaluateSafety } from '../safety/evaluate';
@@ -16,6 +17,8 @@ export function Home() {
   const [doneToday, setDoneToday] = useState(0);
   const [approached, setApproached] = useState<string[]>([]);
   const [planned, setPlanned] = useState<ApproachAttempt[]>([]);
+  const [status, setStatus] = useState<Awaited<ReturnType<typeof todayStatus>> | null>(null);
+  const [myValue, setMyValue] = useState<string | undefined>();
   const [lowMood, setLowMood] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
@@ -30,6 +33,8 @@ export function Home() {
         setDoneToday(h.sessions.filter((s) => s.localDate === today && s.status === 'completed').length);
         setApproached((await todayActivity(now)).approached.map((a) => a.action));
         setPlanned(await plannedApproachAttempts());
+        setStatus(await todayStatus(now));
+        setMyValue((await latestValue())?.label);
         const notice = evaluateSafety({
           now,
           journals: h.journals,
@@ -52,6 +57,9 @@ export function Home() {
 
   const start = (id: string) =>
     navigate(`/m/${id}/minimal`, { state: { entry: 'quickStart' } satisfies PlayerContext });
+
+  const todayAffirmation = status?.affirmation && AFFIRMATIONS.find((a) => a.id === status.affirmation!.id);
+  const fillValue = (t: string) => fillAffirmation(t, myValue);
 
   const today = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
 
@@ -111,23 +119,61 @@ export function Home() {
       <div className="card">
         {loadError ? (
           <p className="muted">기록을 불러오지 못했어요. 연습과 위기 안내는 그대로 쓸 수 있어요.</p>
-        ) : doneToday > 0 || approached.length > 0 ? (
+        ) : (
           <>
-            {doneToday > 0 && <p>오늘 연습 {doneToday}번. 잘하고 있어요.</p>}
+            <RoutineRow
+              label="아침 루틴"
+              done={status?.morningDone}
+              to="/routine/morning/0"
+              minTo="/routine/morningMin/0"
+            />
+            <RoutineRow label="저녁 기록" done={status?.eveningDone} to="/routine/evening/0" minTo="/routine/eveningMin/0" />
+            {status?.todayTask && (
+              <p style={{ marginTop: 12 }}>
+                <strong>다가갈 일:</strong> {status.todayTask.text}
+              </p>
+            )}
+            {todayAffirmation && (
+              <p>
+                <strong>오늘의 확언:</strong> “{fillValue(status!.affirmation!.weaker ? todayAffirmation.weaker : todayAffirmation.text)}”
+              </p>
+            )}
+            {doneToday > 0 && <p className="muted">오늘 연습 {doneToday}번. 잘하고 있어요.</p>}
             {approached.length > 0 && (
               <p>
                 <strong>다가간 일:</strong> {approached.join(', ')}
               </p>
             )}
           </>
-        ) : (
-          <p className="muted">오늘은 아직 연습 기록이 없어요. 1분짜리부터 해볼 수 있어요.</p>
         )}
       </div>
 
       <p className="muted" style={{ marginTop: 32 }}>
         이 앱은 불안을 다루는 기술을 연습하는 보조 도구이며, 진단이나 전문 치료를 대신하지 않아요.
       </p>
+    </div>
+  );
+}
+
+/** 루틴 한 줄: 했으면 ✓, 아니면 시작 버튼과 컨디션이 나쁜 날의 최소 버전. */
+function RoutineRow({ label, done, to, minTo }: { label: string; done?: boolean; to: string; minTo: string }) {
+  return (
+    <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+      <span>
+        {done ? '✓' : '○'} {label}
+      </span>
+      {done ? (
+        <span className="muted">했어요</span>
+      ) : (
+        <span className="row" style={{ alignItems: 'center' }}>
+          <Link className="btn-link" to={minTo} aria-label={`${label} 최소 버전 (1분)`}>
+            최소로
+          </Link>
+          <Link className="btn" to={to}>
+            시작
+          </Link>
+        </span>
+      )}
     </div>
   );
 }

@@ -40,3 +40,9 @@ export function pickAffirmation<T extends AffirmationLike>(
 
 /** 믿는 정도가 이보다 낮으면 더 약한 버전을 보여준다. */
 export const WEAKER_BELOW = 3;
+
+/** 가치형 확언의 {가치} 자리에 내 가치를 넣는다. */
+export function fillAffirmation(text: string, value?: string): string {
+  if (!value) return text;
+  return text.replace('{가치}을/를', `'${value}'을/를`).replace('{가치}', value);
+}

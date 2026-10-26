@@ -11,6 +11,7 @@ import { CheckIn } from './screens/CheckIn';
 import { Home } from './screens/Home';
 import { Modules } from './screens/Modules';
 import { Recommend } from './screens/Recommend';
+import { Routine } from './screens/Routine';
 import { WorryMemo } from './screens/WorryMemo';
 
 function PlayerRoute() {
@@ -38,7 +39,7 @@ function CrisisRoute() {
 function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const inPlayer = location.pathname.startsWith('/m/');
+  const inPlayer = location.pathname.startsWith('/m/') || location.pathname.startsWith('/routine/');
   const onCrisis = location.pathname === '/crisis';
   return (
     <div className="app">
@@ -61,6 +62,7 @@ function Layout() {
           <Route path="/modules" element={<Modules />} />
           <Route path="/m/:id/:variant" element={<PlayerRoute />} />
           <Route path="/worry" element={<WorryMemo />} />
+          <Route path="/routine/:name/:index" element={<Routine />} />
           <Route path="/approach/:id" element={<ApproachResult />} />
           <Route path="/crisis" element={<CrisisRoute />} />
           <Route path="*" element={<Home />} />

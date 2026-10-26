@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { AFFIRMATIONS, getModule } from '../content/load';
 import { addWorryNote, latestValue, listThoughts, listWorryNotes, today, todayActivity, updateSettings, updateWorryNote } from '../db/repo';
-import { WEAKER_BELOW, pickAffirmation } from '../domain/affirmations';
+import { WEAKER_BELOW, fillAffirmation, pickAffirmation } from '../domain/affirmations';
 import { localDate, timeOfDay } from '../domain/day';
 import type { Settings, StateId, Thought, WorryNote } from '../domain/types';
 import { ChoiceList, ScaleButtons, TextInput } from '../ui/inputs';
@@ -118,7 +118,7 @@ export function AffirmationView({ state, settings, value, onChange }: { state?: 
     day: localDate(now, settings?.dayBoundaryHour ?? 4),
     have: myValue ? ['value'] : [],
   });
-  const fill = (t: string) => (myValue ? t.replace('{가치}을/를', `'${myValue}'을/를`).replace('{가치}', myValue) : t);
+  const fill = (t: string) => fillAffirmation(t, myValue ?? undefined);
   const v = (value ?? {}) as { affirmationBelief?: number; usedWeaker?: boolean; weakerBelief?: number };
   if (!picked) return <p className="say">오늘은 확언 없이 넘어가도 괜찮아요.</p>;
   const showWeaker = v.affirmationBelief !== undefined && v.affirmationBelief < WEAKER_BELOW;

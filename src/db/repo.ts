@@ -277,3 +277,65 @@ export async function bumpWorryNote(id: string) {
   const note = await db.worryNotes.get(id);
   if (note) await db.worryNotes.update(id, { repeatCount: note.repeatCount + 1 });
 }
+
+// ---- 아침·저녁 루틴 (작업 9) ----
+
+export interface TodayTask {
+  day: string;
+  text: string;
+  source: 'tomorrowTask' | 'ladder' | 'worry' | 'own';
+  approachTaskId?: string;
+}
+
+export async function setTodayTask(task: Omit<TodayTask, 'day'>, now = new Date()) {
+  await setMeta('todayTask', { ...task, day: await today(now) } satisfies TodayTask);
+}
+
+export async function getTodayTask(now = new Date()): Promise<TodayTask | undefined> {
+  const t = await getMeta<TodayTask>('todayTask');
+  return t && t.day === (await today(now)) ? t : undefined;
+}
+
+/** 아침 "오늘 다가갈 작은 일" 후보의 재료. */
+export async function todayTaskSources(now = new Date()) {
+  const day = await today(now);
+  const yesterday = addDays(day, -1);
+  const db = getDB();
+  const [journals, approachTasks, notes] = await Promise.all([
+    db.journalEntries.where('localDate').between(yesterday, day, true, true).toArray(),
+    db.approachTasks.toArray(),
+    db.worryNotes.where('localDate').between(yesterday, day, true, true).toArray(),
+  ]);
+  const lastJournal = journals.filter((j) => j.localDate === yesterday).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  return {
+    tomorrowTask: lastJournal?.tomorrowTask,
+    approachTasks: approachTasks.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    worryActions: notes.filter((n) => n.controllable === 'yes' && n.nextAction).map((n) => n.nextAction!),
+  };
+}
+
+/** 오늘 저녁 기록의 "내일 다가가 볼 일"을 적는다 (저녁 루틴 마무리). */
+export async function setTomorrowTask(text: string, now = new Date()) {
+  const day = await today(now);
+  const latest = (await getDB().journalEntries.where('localDate').equals(day).toArray()).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  if (latest) await getDB().journalEntries.update(latest.id, { tomorrowTask: text });
+}
+
+/** 홈 "오늘" 카드 (설계 7.2). */
+export async function todayStatus(now = new Date()) {
+  const day = await today(now);
+  const db = getDB();
+  const [checkins, journals, sessions] = await Promise.all([
+    db.checkins.where('localDate').equals(day).toArray(),
+    db.journalEntries.where('localDate').equals(day).count(),
+    db.sessions.where('localDate').equals(day).filter((s) => s.moduleId === 'AF01' && s.status === 'completed').toArray(),
+  ]);
+  const lastAffirmation = sessions.sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
+  const aff = lastAffirmation?.answers.affirmation as { affirmationId?: string; usedWeaker?: boolean } | undefined;
+  return {
+    morningDone: checkins.some((c) => c.source === 'morning'),
+    eveningDone: journals > 0,
+    affirmation: aff?.affirmationId ? { id: aff.affirmationId, weaker: Boolean(aff.usedWeaker) } : undefined,
+    todayTask: await getTodayTask(now),
+  };
+}
