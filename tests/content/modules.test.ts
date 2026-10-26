@@ -12,7 +12,7 @@ const normalize = (s: string) =>
   s.replace(/\*\*/g, '').replace(/\(쉼 \d+초\)/g, ' ').replace(/^>\s?/gm, '').replace(/\s+/g, ' ').trim();
 
 function stepTexts(step: Step): string[] {
-  if (step.type === 'say') return [step.text];
+  if (step.type === 'say' || step.type === 'exit') return [step.text];
   if (step.type === 'pacer') return [...(step.cues ?? []).map((c) => c.text), ...(step.cycleCues ?? []).flatMap((c) => Object.values(c))];
   return [];
 }
@@ -47,7 +47,11 @@ describe.each(modules.map((m) => [m.id, m] as const))('%s', (id, m) => {
       ...m.troubleshooting.map((t) => t.problem),
       ...Object.values(m.variants).flatMap((v) => v!.steps.flatMap(stepTexts)),
     ];
-    for (const t of texts) expect(doc, `문서에 없는 문장: ${t}`).toContain(normalize(t));
+    for (const t of texts) {
+      // {자리 표시}는 코드의 변수 이름과 문서의 한국어 이름이 다르므로, 그 사이의 고정된 부분만 비교한다
+      const parts = normalize(t).split(/\{[^}]+\}/).map((p) => p.trim()).filter((p) => p.length >= 2);
+      for (const p of parts) expect(doc, `문서에 없는 문장: ${t}`).toContain(p);
+    }
   });
 
   it('위기로 연결되는 멈춤 신호가 있다', () => {

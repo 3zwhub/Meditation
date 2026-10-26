@@ -1,0 +1,385 @@
+{
+  "id": "DB01",
+  "contentVersion": 1,
+  "name": "TIPP",
+  "summary": "감정이 너무 클 때 찬물·움직임·호흡·근육 이완으로 몸부터 진정시켜요.",
+  "category": "dbt",
+  "mechanisms": [
+    "m1",
+    "m6"
+  ],
+  "states": {
+    "suitable": [
+      "D",
+      "A"
+    ],
+    "avoid": []
+  },
+  "kind": "calming",
+  "evidence": {
+    "level": "preliminary",
+    "note": "얼굴을 찬물에 담그고 숨을 참으면 심박이 느려지는 잠수 반사는 생리학적으로 잘 알려진 현상이에요. 짧은 운동, 느린 호흡, 근육 이완도 각각 근거가 있지만, 넷을 묶은 TIPP를 따로 검증한 연구는 적어요."
+  },
+  "intro": [
+    "감정이 너무 커지면 생각으로는 아무것도 할 수 없을 때가 있어요. 그럴 땐 몸을 먼저 바꾸는 게 가장 빨라요.",
+    "TIPP는 몸에 직접 신호를 보내서, 생각할 수 있는 상태로 돌아오게 돕는 기술이에요."
+  ],
+  "preMeasure": {
+    "id": "intensity",
+    "label": "지금 감정의 강도는 몇 점인가요?"
+  },
+  "postMeasure": {
+    "id": "intensity",
+    "label": "지금 감정의 강도는 몇 점인가요?"
+  },
+  "variants": {
+    "minimal": {
+      "durationLabel": "1분",
+      "estimatedSec": 70,
+      "steps": [
+        {
+          "id": "screen",
+          "type": "tippScreening"
+        },
+        {
+          "id": "t1",
+          "type": "say",
+          "text": "세면대나 그릇에 찬물을 받거나, 찬물에 적신 수건이나 얼음팩을 준비하세요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t2",
+          "type": "say",
+          "text": "숨을 들이쉬고 멈춘 채, 얼굴(특히 눈 아래와 볼)을 찬물에 대거나 차가운 수건을 15~30초 대 보세요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t3",
+          "type": "timer",
+          "sec": 30,
+          "label": "얼굴을 찬물에 대고 숨을 멈춰요",
+          "skippable": true,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t4",
+          "type": "say",
+          "text": "얼굴을 떼고, 천천히 길게 내쉬세요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t5",
+          "type": "say",
+          "text": "한 번 더 길게 내쉬세요.",
+          "pauseSec": 6,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t6",
+          "type": "say",
+          "text": "몸의 속도가 조금 느려진 걸 느껴 보세요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "r1",
+          "type": "say",
+          "text": "숨을 들이쉬면서 두 주먹을 꽉 쥐고 어깨를 귀 쪽으로 올리세요.",
+          "pauseSec": 4,
+          "showIf": "setting.tippScreening.restricted"
+        },
+        {
+          "id": "r2",
+          "type": "say",
+          "text": "숨을 길게 내쉬면서 한 번에 툭 풀어 주세요.",
+          "pauseSec": 6,
+          "showIf": "setting.tippScreening.restricted"
+        },
+        {
+          "id": "r3",
+          "type": "say",
+          "text": "세 번 반복해요.",
+          "showIf": "setting.tippScreening.restricted"
+        },
+        {
+          "id": "r4",
+          "type": "say",
+          "text": "숨을 들이쉬면서 두 주먹을 꽉 쥐고 어깨를 귀 쪽으로 올리세요.",
+          "pauseSec": 4,
+          "showIf": "setting.tippScreening.restricted"
+        },
+        {
+          "id": "r5",
+          "type": "say",
+          "text": "숨을 길게 내쉬면서 한 번에 툭 풀어 주세요.",
+          "pauseSec": 6,
+          "showIf": "setting.tippScreening.restricted"
+        },
+        {
+          "id": "r6",
+          "type": "say",
+          "text": "숨을 들이쉬면서 두 주먹을 꽉 쥐고 어깨를 귀 쪽으로 올리세요.",
+          "pauseSec": 4,
+          "showIf": "setting.tippScreening.restricted"
+        },
+        {
+          "id": "r7",
+          "type": "say",
+          "text": "숨을 길게 내쉬면서 한 번에 툭 풀어 주세요.",
+          "pauseSec": 6,
+          "showIf": "setting.tippScreening.restricted"
+        }
+      ]
+    },
+    "basic": {
+      "durationLabel": "3분",
+      "estimatedSec": 200,
+      "steps": [
+        {
+          "id": "screen",
+          "type": "tippScreening"
+        },
+        {
+          "id": "t0",
+          "type": "say",
+          "text": "T — 온도",
+          "pauseSec": 0,
+          "emphasis": true,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t1",
+          "type": "say",
+          "text": "찬물(차갑지만 견딜 수 있는 정도)을 그릇이나 세면대에 받으세요. 바로 준비가 어렵다면 찬물에 적신 수건, 얼음팩, 차가운 캔도 괜찮아요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t2",
+          "type": "say",
+          "text": "숨을 들이쉬고 멈춘 채, 몸을 앞으로 숙여 얼굴을 찬물에 담그세요. 눈 아래부터 볼까지 물에 닿으면 돼요. 15초에서 30초까지, 편한 만큼만요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t3",
+          "type": "say",
+          "text": "수건이나 얼음팩이라면 눈 아래와 볼에 대고 숨을 잠깐 멈추세요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t4",
+          "type": "timer",
+          "sec": 30,
+          "label": "얼굴을 찬물에 대고 숨을 멈춰요",
+          "skippable": true,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "t5",
+          "type": "say",
+          "text": "이제 얼굴을 떼고, 천천히 내쉬세요.",
+          "pauseSec": 5,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "i0",
+          "type": "say",
+          "text": "I — 강한 움직임",
+          "pauseSec": 0,
+          "emphasis": true,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "i1",
+          "type": "say",
+          "text": "감정이 몸에 쌓인 에너지처럼 느껴진다면, 그 에너지를 써 볼게요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "i2",
+          "type": "say",
+          "text": "1분 동안 제자리에서 빠르게 걷거나, 계단을 오르내리거나, 팔 벌려 뛰기를 해보세요. 숨이 조금 찰 정도면 충분해요.",
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "i3",
+          "type": "timer",
+          "sec": 60,
+          "label": "제자리에서 빠르게 움직여요",
+          "skippable": true,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "i4",
+          "type": "say",
+          "text": "멈추고, 숨이 돌아오는 걸 느껴 보세요.",
+          "pauseSec": 5,
+          "showIf": "!setting.tippScreening.restricted"
+        },
+        {
+          "id": "p0",
+          "type": "say",
+          "text": "P — 속도 조절 호흡",
+          "pauseSec": 0,
+          "emphasis": true
+        },
+        {
+          "id": "p1",
+          "type": "say",
+          "text": "이제 숨을 천천히, 내쉬는 숨을 길게 쉬어 볼게요."
+        },
+        {
+          "id": "p2",
+          "type": "say",
+          "text": "원이 커지면 4초 동안 들이쉬고, 작아지면 6초 동안 내쉬세요."
+        },
+        {
+          "id": "p3",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 4
+            },
+            {
+              "phase": "out",
+              "sec": 6
+            }
+          ],
+          "cycles": 6
+        },
+        {
+          "id": "m0",
+          "type": "say",
+          "text": "P — 짝지은 근육 이완",
+          "pauseSec": 0,
+          "emphasis": true
+        },
+        {
+          "id": "m1",
+          "type": "say",
+          "text": "숨을 들이쉬면서 몸에 힘을 주고, 내쉬면서 한 번에 풀어 볼게요."
+        },
+        {
+          "id": "m2",
+          "type": "say",
+          "text": "들이쉬면서 두 주먹을 꽉 쥐세요.",
+          "pauseSec": 4
+        },
+        {
+          "id": "m3",
+          "type": "say",
+          "text": "내쉬면서 툭 놓으세요.",
+          "pauseSec": 6
+        },
+        {
+          "id": "m4",
+          "type": "say",
+          "text": "들이쉬면서 어깨를 귀 쪽으로 올리세요.",
+          "pauseSec": 4
+        },
+        {
+          "id": "m5",
+          "type": "say",
+          "text": "내쉬면서 툭 떨어뜨리세요.",
+          "pauseSec": 6
+        },
+        {
+          "id": "m6",
+          "type": "say",
+          "text": "들이쉬면서 얼굴을 찡그려 꽉 모으세요.",
+          "pauseSec": 4
+        },
+        {
+          "id": "m7",
+          "type": "say",
+          "text": "내쉬면서 이마와 턱을 풀어 주세요.",
+          "pauseSec": 6
+        },
+        {
+          "id": "m8",
+          "type": "say",
+          "text": "힘을 뺄 때 마음속으로 \"풀어지자\"라고 말해도 좋아요."
+        }
+      ]
+    }
+  },
+  "outro": {
+    "message": "몸이 조금 진정됐다면, 이제 생각할 여유가 생겼을 거예요. 감정이 아직 남아 있어도 괜찮아요. 지금은 큰 결정을 내리기보다 다음 한 걸음만 정해 봐요.",
+    "reflection": {
+      "id": "r1",
+      "type": "choice",
+      "label": "네 가지 중 가장 도움이 된 것은 무엇이었나요?",
+      "options": [
+        {
+          "value": "T",
+          "label": "T 온도(찬물)"
+        },
+        {
+          "value": "I",
+          "label": "I 강한 움직임"
+        },
+        {
+          "value": "P1",
+          "label": "P 속도 조절 호흡"
+        },
+        {
+          "value": "P2",
+          "label": "P 짝지은 근육 이완"
+        }
+      ],
+      "optional": true
+    },
+    "next": [
+      {
+        "if": "post.intensity>=7",
+        "module": "GR01",
+        "variant": "minimal"
+      },
+      {
+        "if": "true",
+        "module": "DB02",
+        "variant": "basic"
+      },
+      {
+        "if": "true",
+        "module": "CB01",
+        "variant": "minimal"
+      },
+      {
+        "if": "true",
+        "action": "returnToTask"
+      }
+    ]
+  },
+  "troubleshooting": [
+    {
+      "problem": "찬물을 준비할 수 없는 곳이에요",
+      "answer": "차가운 음료 캔이나 병을 손목·목 뒤·볼에 대 보세요. 그것도 없다면 근육 이완(마지막 P)만 해도 괜찮아요."
+    },
+    {
+      "problem": "찬물에 얼굴을 대면 더 놀라고 불안해요",
+      "answer": "온도를 덜 차갑게 하거나, 얼굴 대신 손목에 찬물을 흘려 보세요. 그래도 불편하면 T는 빼고 쓰세요(설정 변경)."
+    },
+    {
+      "problem": "사람이 많아서 움직일 수 없어요",
+      "answer": "화장실 같은 조용한 곳으로 가거나, 앉은 채 근육 이완(마지막 P)만 하세요. 다리에 힘을 줬다 푸는 것도 남들 눈에 거의 띄지 않아요."
+    },
+    {
+      "problem": "효과가 금방 사라져요",
+      "answer": "TIPP는 짧은 시간 동안 몸을 진정시키는 응급 기술이에요. 진정된 그 틈에 STOP이나 감정 이름 붙이기로 이어가는 게 중요해요.",
+      "action": "DB02"
+    }
+  ],
+  "stopSignals": [
+    {
+      "text": "찬물이나 운동 중 가슴 통증, 심한 어지러움, 숨이 막힘, 심장이 불규칙하게 뛰어요 → 즉시 멈추고 앉아서 쉬세요. 증상이 계속되면 의료적 도움을 받으세요(응급 119).",
+      "action": "GR01"
+    },
+    {
+      "text": "감정 폭주가 자해 충동과 함께 와요",
+      "action": "crisis"
+    }
+  ],
+  "references": [
+    "linehan2015"
+  ]
+}
