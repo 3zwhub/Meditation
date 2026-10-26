@@ -6,6 +6,11 @@ import { test as base, expect, type Page } from '@playwright/test';
  */
 export const test = base.extend({
   page: async ({ page }, use) => {
+    // SLOW_CPU=4 처럼 주면 CPU를 느리게 해서, 느린 CI에서만 드러나는 경쟁 조건을 이 환경에서 재현한다
+    if (process.env.SLOW_CPU) {
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send('Emulation.setCPUThrottlingRate', { rate: Number(process.env.SLOW_CPU) });
+    }
     await page.goto('/#/crisis');
     await page.evaluate(
       () =>
@@ -53,20 +58,22 @@ export async function readStore(page: Page, store: string) {
 }
 
 export async function startModule(page: Page, path: string) {
-  // 같은 주소로 다시 이동하면 화면이 바뀌지 않으므로 홈을 거친다
+  // 같은 주소로 다시 이동하면 화면이 바뀌지 않으므로 홈을 거친다. 주소의 # 뒤만 바뀌면 화면이 늦게 바뀔 수 있어,
+  // 홈이 실제로 그려진 뒤에 이동한다 (그렇지 않으면 이전 연습 화면을 새 연습으로 착각한다)
   await page.goto('/#/');
+  await expect(page.getByRole('link', { name: '지금 어때요?' })).toBeVisible();
   await page.goto(`/#/m/${path}`);
   await beginModule(page);
 }
 
 /** 모듈의 첫 화면(소개와 시작 전 점수)에서 시작한다. */
 export async function beginModule(page: Page) {
-  // 화면이 그려진 뒤에 고른다 (그리기 전에 확인하면 시작 전 점수가 있는 모듈을 잘못 판단한다)
-  const start = page.getByRole('button', { name: '시작하기', exact: true });
-  await expect(start).toBeVisible();
+  // 연습 첫 화면이 그려진 뒤에 고른다. "← 멈추기"는 연습 화면에만 있으므로, 이전 화면(시퀀스 소개, 마무리)의
+  // "시작하기"를 연습의 버튼으로 착각하지 않는다. 시작 전 점수가 있는 모듈은 두 버튼이 함께 그려진다.
+  await expect(page.getByRole('button', { name: '← 멈추기' })).toBeVisible();
   const noScore = page.getByRole('button', { name: '점수 없이 바로 시작' });
   if (await noScore.isVisible()) await noScore.click();
-  else await start.click();
+  else await page.getByRole('button', { name: '시작하기', exact: true }).click();
 }
 
 export const forward = (page: Page) => page.locator('.player-footer').last().locator('button').last();

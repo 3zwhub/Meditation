@@ -27,6 +27,8 @@ test('하루 일정: 아침 루틴부터 저녁 기록까지, 다음 날 아침 
   await runToOutro(page);
   await page.getByRole('button', { name: '다음', exact: true }).click();
   await page.getByRole('button', { name: '시작하기' }).click(); // 확언
+  // 확언 문장은 저장된 내 가치를 읽은 뒤에 그려지므로, 나타난 뒤에 답한다 (건너뛰지 않도록)
+  await page.getByRole('group', { name: '이 말이 얼마나 믿어지나요?' }).getByRole('button', { name: '5점' }).click();
   await runToOutro(page);
   await page.getByRole('button', { name: '다음', exact: true }).click();
   await expect(page.getByRole('heading', { name: '오늘 다가갈 작은 일 하나' })).toBeVisible();
@@ -85,6 +87,7 @@ test('하루 일정: 아침 루틴부터 저녁 기록까지, 다음 날 아침 
 
   // 21:30 저녁 루틴 — 걱정 시간 → 3줄 기록 → 내일 할 일
   await page.clock.setSystemTime(new Date(2026, 10, 2, 21, 30));
+  await expect(todayCard(page)).toContainText('✓ 아침 루틴'); // 오늘 상태를 다 불러온 뒤에 누른다
   await todayCard(page).getByRole('link', { name: '시작' }).click();
   await page.getByRole('button', { name: '시작하기' }).click(); // 걱정 시간 (시작 전 점수 없음)
   await forward(page).click(); // 안내 문장
