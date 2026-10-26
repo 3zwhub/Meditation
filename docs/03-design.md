@@ -79,13 +79,18 @@
 | `scale` | `id`, `label`, `min`(0), `max`(10 또는 100), `unit?`("%") | 0~10 슬라이더 / 0~100% |
 | `choice` | `id`, `label`, `options`(`{value,label,next?}[]`), `multi?`, `lexicon?` | 버튼 선택. `lexicon`이면 감정 단어 등 공용 목록 사용 |
 | `text` | `id`, `label`, `placeholder?`, `example?`, `optional?` | 짧은 입력과 작성 예시 |
-| `bodyMap` | `id`, `label`, `multi?` | 몸 그림에서 부위 선택 |
-| `list` | `source`(`"worryNotesToday"` 등), `itemAction` | 저장된 기록 목록 (CB03 걱정 시간) |
-| `branch` | `if`(조건식), `goto`(step id) 또는 `then: ModuleRef` | 답에 따른 분기 |
-| `link` | `module`, `variant`, `label` | 다른 모듈로 이어가기 |
-| `crisisCheck` | — | 위기 버튼을 강조 표시 (CB05·JR01의 기분 0~2점 등) |
+| `exit` | `text` | 모듈을 여기서 끝냄 (DB03의 "불안이 사실에 맞는 경우"). 이렇게 끝나면 마무리 문장을 숨김 |
+| `worryMemo` | `label`, `example?` | 걱정 한 줄을 `worryNotes`에 저장 (CB03 최소) |
+| `worryReview` | — | 오늘의 걱정 메모를 다시 보고 분류 (CB03 기본) |
+| `affirmation` | — | 상태에 맞는 확언과 믿는 정도, 3점 미만이면 약한 버전 (AF01) |
+| `tippScreening` | — | 처음 한 번 하는 안전 확인, 결과는 설정에 저장 (DB01) |
+| `todaySummary` | — | 오늘 앱에서 한 것 자동 요약 (JR01) |
 
-모든 step에는 `id`가 있고, 문장 안의 `{변수}`는 같은 세션의 입력 `id`나 이전 단계 값(`{before}`, `{현재 시각}`)으로 채워집니다.
+- 모든 step에는 `id`가 있고, `showIf`(조건식)로 보여줄지 정할 수 있습니다. 답에 따른 분기는 이 `showIf`로 표현합니다.
+- 몸 부위·감정 단어·활동·가치·생각 패턴 같은 공용 선택지는 `choice`의 `lexicon`(`content/lexicon/*.json`)으로 씁니다. 몸 그림 선택(`bodyMap`)은 2차로 미뤘습니다.
+- `scale`과 시작 전·후 점수에는 `crisisEmphasisAtOrBelow`를 둘 수 있습니다. 그 점수 이하를 고르면 위기 버튼을 강조합니다(CB05·JR01의 기분 0~2점).
+- 문장 안의 `{변수}`는 같은 세션의 입력 `id`나 이전 단계 값(`{before}`, `{현재 시각}`)으로 채워집니다. 선택지 답은 보이는 글자로 채워집니다.
+- 저녁 기록(JR01)처럼 전후 점수가 없는 모듈은 `preMeasure`·`postMeasure`를 비우고, `record: "journal"`이면 완료 시 저녁 기록으로 저장합니다.
 
 **Affirmation**
 

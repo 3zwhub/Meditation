@@ -201,6 +201,8 @@ p { margin: 0 0 12px; }
   cursor: pointer;
 }
 .choice[aria-pressed='true'] { border: 2px solid var(--accent); background: var(--accent-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice.chip { padding: 8px 14px; border-radius: 999px; }
 .choice small { display: block; color: var(--text-2); font-size: 0.85em; }
 
 textarea {

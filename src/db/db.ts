@@ -1,6 +1,6 @@
 // IndexedDB 스키마 (설계 2.2). 기기 안에만 저장하고 외부로 보내지 않는다.
 import Dexie, { type Table } from 'dexie';
-import type { Assessment, Checkin, CrisisEvent, JournalEntry, RecommendationRecord, Session, Settings } from '../domain/types';
+import type { Assessment, Checkin, CrisisEvent, JournalEntry, RecommendationRecord, Session, Settings, WorryNote } from '../domain/types';
 
 export interface MetaRow {
   key: string;
@@ -17,7 +17,7 @@ export class AppDB extends Dexie {
   crisisEvents!: Table<CrisisEvent, string>;
   journalEntries!: Table<JournalEntry, string>;
   assessments!: Table<Assessment, string>;
-  worryNotes!: Table<Later, string>;
+  worryNotes!: Table<WorryNote, string>;
   thoughts!: Table<Later, string>;
   approachTasks!: Table<Later, string>;
   approachAttempts!: Table<Later, string>;

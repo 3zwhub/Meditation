@@ -4,11 +4,13 @@ import {
   DEFAULT_SETTINGS,
   type Checkin,
   type CrisisEvent,
+  type JournalEntry,
   type RecommendationRecord,
   type Session,
   type SessionEntry,
   type Settings,
   type VariantKey,
+  type WorryNote,
 } from '../domain/types';
 import { getDB } from './db';
 
@@ -94,4 +96,46 @@ export async function getMeta<T>(key: string): Promise<T | undefined> {
 
 export async function setMeta(key: string, value: unknown) {
   await getDB().meta.put({ key, value });
+}
+
+export async function today(now = new Date()) {
+  const { dayBoundaryHour } = await getSettings();
+  return localDate(now, dayBoundaryHour);
+}
+
+// ---- 걱정 메모 (CB03) ----
+
+export async function addWorryNote(text: string, now = new Date()): Promise<WorryNote> {
+  const { dayBoundaryHour } = await getSettings();
+  const note: WorryNote = { id: newId(), ...stamp(now, dayBoundaryHour), text, repeatCount: 1 };
+  await getDB().worryNotes.add(note);
+  return note;
+}
+
+export async function listWorryNotes(day: string): Promise<WorryNote[]> {
+  return (await getDB().worryNotes.where('localDate').equals(day).toArray()).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+}
+
+export async function updateWorryNote(id: string, patch: Partial<WorryNote>) {
+  await getDB().worryNotes.update(id, patch);
+}
+
+// ---- 저녁 기록 (JR01) ----
+
+export async function addJournalEntry(data: Omit<JournalEntry, 'id' | 'createdAt' | 'localDate' | 'timeOfDay'>, now = new Date()) {
+  const { dayBoundaryHour } = await getSettings();
+  const entry: JournalEntry = { id: newId(), ...stamp(now, dayBoundaryHour), ...data };
+  await getDB().journalEntries.add(entry);
+  return entry;
+}
+
+/** 오늘 앱에서 한 것 (JR01 자동 요약). */
+export async function todayActivity(now = new Date()) {
+  const day = await today(now);
+  const db = getDB();
+  const [sessions, worryNoteCount] = await Promise.all([
+    db.sessions.where('localDate').equals(day).filter((s) => s.status === 'completed').toArray(),
+    db.worryNotes.where('localDate').equals(day).count(),
+  ]);
+  return { sessions: sessions.sort((a, b) => a.startedAt.localeCompare(b.startedAt)), worryNoteCount };
 }

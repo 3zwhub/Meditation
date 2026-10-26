@@ -59,7 +59,7 @@ export function CheckIn() {
       });
       const [settings, history] = await Promise.all([getSettings(), recentHistory(now)]);
       const r = recommend({ checkin, settings, now, catalog: catalog(), history });
-      const rec = await addRecommendation({ checkinId: checkin.id, primary: r.primary, alternatives: r.alternatives, banner: r.banner }, now);
+      const rec = await addRecommendation({ checkinId: checkin.id, state: r.state, primary: r.primary, alternatives: r.alternatives, banner: r.banner }, now);
       navigate(`/recommend/${rec.id}`, { replace: true });
     } catch (e) {
       console.error(e);

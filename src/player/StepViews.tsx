@@ -104,10 +104,10 @@ export function InputView({
     return (
       <ChoiceList
         label={step.label}
-        options={step.options}
+        options={step.options ?? []}
         value={arr}
         multi={step.multi}
-        onChange={(v) => onChange(step.multi ? v : v[0])}
+        onChange={(v) => onChange(step.multi ? (step.maxSelect ? v.slice(-step.maxSelect) : v) : v[0])}
       />
     );
   }

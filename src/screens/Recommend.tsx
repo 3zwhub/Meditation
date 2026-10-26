@@ -28,7 +28,7 @@ export function Recommend() {
     await updateRecommendation(rec.id, { chosen }).catch(() => {});
     navigate(`/m/${pick.module}/${pick.variant}`, {
       replace: true,
-      state: { entry: 'recommendation', checkinId: rec.checkinId, recommendationId: rec.id } satisfies PlayerContext,
+      state: { entry: 'recommendation', checkinId: rec.checkinId, recommendationId: rec.id, state: rec.state } satisfies PlayerContext,
     });
   };
 

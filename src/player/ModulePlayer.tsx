@@ -3,11 +3,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getModule } from '../content/load';
 import type { ModuleContent, Step } from '../content/schema';
-import { getSettings, logCrisisEvent, startSession, updateRecommendation, updateSession, updateSettings } from '../db/repo';
+import { addJournalEntry, getSettings, logCrisisEvent, startSession, updateRecommendation, updateSession, updateSettings } from '../db/repo';
 import { evaluate } from '../domain/conditions';
-import type { SessionEntry, Settings, VariantKey } from '../domain/types';
-import { CRISIS_EVENT } from '../safety/CrisisButton';
+import type { JournalResponse, SessionEntry, Settings, StateId, VariantKey } from '../domain/types';
+import { CRISIS_EVENT, useCrisisEmphasis } from '../safety/CrisisButton';
 import { ScaleButtons } from '../ui/inputs';
+import { AffirmationView, TippScreeningView, TodaySummaryView, WorryMemoView, WorryReviewView } from './SpecialSteps';
 import { InputView, PacerView, SayView, TimerView, useWakeLock } from './StepViews';
 import { stepDuration } from './timeline';
 
@@ -16,15 +17,58 @@ export interface PlayerContext {
   checkinId?: string;
   fromSessionId?: string;
   recommendationId?: string;
+  state?: StateId;
 }
 
 type Phase = 'pre' | 'steps' | 'post' | 'outro' | 'stopped';
 
 const VARIANT_LABEL: Record<VariantKey, string> = { minimal: '최소', basic: '기본', extended: '확장' };
 
+const INPUT_TYPES = new Set<Step['type']>(['scale', 'choice', 'text']);
+
+/** 답이 채워졌는지. 전용 단계는 각자 답을 남긴 뒤에 넘어갈 수 있다. */
+function isAnswered(step: Step, value: unknown): boolean {
+  switch (step.type) {
+    case 'exit':
+    case 'worryReview':
+    case 'todaySummary':
+      return true;
+    case 'affirmation': {
+      const v = value as { affirmationBelief?: number; usedWeaker?: boolean; weakerBelief?: number } | undefined;
+      return v?.affirmationBelief !== undefined && (!v.usedWeaker || v.weakerBelief !== undefined);
+    }
+    default:
+      return value !== undefined && value !== '' && !(Array.isArray(value) && value.length === 0);
+  }
+}
+
+/** 답 없이 넘어갈 수 있는지 (선택 입력, 그리고 확언처럼 건너뛰어도 되는 단계). */
+function isSkippable(step: Step): boolean {
+  if (step.type === 'affirmation') return true;
+  return 'optional' in step && Boolean(step.optional);
+}
+
+/** 문장 채우기용 값: 선택지는 값 대신 보이는 글자로. */
+function templateVars(steps: Step[], answers: Record<string, unknown>): Record<string, unknown> {
+  const vars: Record<string, unknown> = { ...answers };
+  for (const s of steps) {
+    if (s.type !== 'choice' || answers[s.id] === undefined) continue;
+    const label = (v: unknown) => s.options?.find((o) => o.value === v)?.label ?? String(v);
+    const a = answers[s.id];
+    vars[s.id] = Array.isArray(a) ? a.map(label).join(', ') : label(a);
+  }
+  return vars;
+}
+
+const num = (v: unknown) => (typeof v === 'number' ? v : undefined);
+const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+
 export function ModulePlayer({ module, variant, context }: { module: ModuleContent; variant: VariantKey; context: PlayerContext }) {
   const navigate = useNavigate();
+  const { setEmphasis } = useCrisisEmphasis();
   const v = module.variants[variant] ?? module.variants.minimal;
+  const preId = module.preMeasure?.id;
+  const postId = module.postMeasure?.id;
   const [phase, setPhase] = useState<Phase>('pre');
   const [pre, setPre] = useState<number | undefined>();
   const [post, setPost] = useState<number | undefined>();
@@ -32,6 +76,8 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   const [index, setIndex] = useState(0);
   const [stepStartedAt, setStepStartedAt] = useState(() => Date.now());
   const [helpOpen, setHelpOpen] = useState(false);
+  // 조기 종료 단계(exit)로 끝났으면 마무리 문장(예: "한 걸음 다가갔어요")이 맞지 않으므로 숨긴다
+  const [exited, setExited] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
   const sessionId = useRef<string | null>(null);
   const sessionReady = useRef<Promise<void> | null>(null);
@@ -67,6 +113,9 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
     };
   }, [module.id, module.contentVersion, variant, context.entry, context.checkinId, context.fromSessionId, context.recommendationId]);
 
+  // 화면을 떠나면 위기 버튼 강조를 되돌린다
+  useEffect(() => () => setEmphasis(false), [setEmphasis]);
+
   const save = useCallback(async (patch: Parameters<typeof updateSession>[1]) => {
     await sessionReady.current;
     if (!sessionId.current) return;
@@ -77,13 +126,15 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
     }
   }, []);
 
+  const preRecord = useCallback(() => (pre === undefined || !preId ? {} : { [preId]: pre }), [pre, preId]);
+
   const stop = useCallback(
     async (reason: 'user' | 'crisis' | 'stopSignal' | 'troubleshooting') => {
       if (phaseRef.current === 'stopped' || phaseRef.current === 'outro') return;
       setPhase('stopped');
-      await save({ status: 'stopped', stopReason: reason, endedAt: new Date().toISOString(), answers, pre: pre === undefined ? {} : { [module.preMeasure.id]: pre } });
+      await save({ status: 'stopped', stopReason: reason, endedAt: new Date().toISOString(), answers, pre: preRecord() });
     },
-    [answers, pre, module.preMeasure.id, save],
+    [answers, preRecord, save],
   );
 
   // 위기 버튼을 누르면 진행 중인 모듈을 멈춤으로 저장한다 (설계 8.2-1)
@@ -95,18 +146,28 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
 
   const scope = useMemo(
     () => ({
-      pre: pre === undefined ? {} : { [module.preMeasure.id]: pre },
-      post: post === undefined ? {} : { [module.postMeasure.id]: post },
+      pre: preRecord(),
+      post: post === undefined || !postId ? {} : { [postId]: post },
       answer: answers,
       setting: settings ?? {},
     }),
-    [pre, post, answers, settings, module.preMeasure.id, module.postMeasure.id],
+    [preRecord, post, postId, answers, settings],
   );
 
   const visible = useCallback(
-    (step: Step) => !('showIf' in step) || !step.showIf || evaluate(step.showIf, scope),
-    [scope],
+    (step: Step) => {
+      if (step.type === 'tippScreening' && settings?.tippScreening.done) return false;
+      return !step.showIf || evaluate(step.showIf, scope);
+    },
+    [scope, settings],
   );
+
+  /** 모든 단계를 마쳤을 때. */
+  const finishSteps = useCallback(() => {
+    if (postId) setPhase('post');
+    else void complete(undefined);
+    // complete는 아래에서 정의되며, 같은 렌더의 answers·pre를 쓰도록 의존성에 넣는다
+  }, [postId, answers, pre]);
 
   /** 다음에 보여줄 단계로. 끝이면 종료 점수로. */
   const advanceFrom = useCallback(
@@ -114,13 +175,13 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
       let i = from + 1;
       while (i < v.steps.length && !visible(v.steps[i])) i++;
       if (i >= v.steps.length) {
-        setPhase('post');
+        finishSteps();
         return;
       }
       setIndex(i);
       setStepStartedAt(startAt);
     },
-    [v.steps, visible],
+    [v.steps, visible, finishSteps],
   );
 
   // 저절로 넘어가는 단계: 시각 기준으로 확인하고, 화면이 꺼졌다 돌아오면 지나간 단계를 건너뛴다.
@@ -132,15 +193,14 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
       const now = Date.now();
       let moved = false;
       for (;;) {
-        const step = v.steps[i];
-        const dur = stepDuration(step);
+        const dur = stepDuration(v.steps[i]);
         if (dur === null || now - start < dur * 1000) break;
         start += dur * 1000;
         let next = i + 1;
         while (next < v.steps.length && !visible(v.steps[next])) next++;
         moved = true;
         if (next >= v.steps.length) {
-          setPhase('post');
+          finishSteps();
           return;
         }
         i = next;
@@ -161,32 +221,57 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
       window.clearInterval(id);
       document.removeEventListener('visibilitychange', tick);
     };
-  }, [phase, index, stepStartedAt, v.steps, visible]);
+  }, [phase, index, stepStartedAt, v.steps, visible, finishSteps]);
 
-  const begin = (skipPre: boolean) => {
-    if (skipPre) setPre(undefined);
+  const begin = () => {
     setPhase('steps');
-    setIndex(0);
     setStepStartedAt(Date.now());
     if (v.steps[0] && !visible(v.steps[0])) advanceFrom(0, Date.now());
+    else setIndex(0);
   };
 
-  const finishPost = async (value: number | undefined) => {
+  async function complete(value: number | undefined) {
     setPost(value);
     setPhase('outro');
     await save({
       status: 'completed',
       endedAt: new Date().toISOString(),
-      pre: pre === undefined ? {} : { [module.preMeasure.id]: pre },
-      post: value === undefined ? {} : { [module.postMeasure.id]: value },
+      pre: preRecord(),
+      post: value === undefined || !postId ? {} : { [postId]: value },
       answers,
     });
+    if (module.record === 'journal') {
+      const summary = answers.todaySummary as { sessions: string[]; worryNoteCount: number } | undefined;
+      try {
+        await addJournalEntry({
+          anxiety: num(answers.dayAnxiety) ?? 0,
+          mood: num(answers.dayMood) ?? 0,
+          energy: num(answers.dayEnergy) ?? 0,
+          oneLine: str(answers.oneLine),
+          anxiousMoment: str(answers.anxiousMoment),
+          response: answers.response as JournalResponse[] | undefined,
+          responseNote: str(answers.responseNote),
+          good: str(answers.good),
+          goodRole: str(answers.goodRole),
+          autoSummary: summary,
+          tomorrowTask: str(answers.tomorrowTask),
+        });
+      } catch (e) {
+        console.error('저녁 기록을 저장하지 못했어요', e);
+      }
+    }
+  }
+
+  const setAnswer = (id: string, value: unknown) => setAnswers((a) => ({ ...a, [id]: value }));
+
+  const emphasizeIfLow = (limit: number | undefined, value: number) => {
+    if (limit !== undefined) setEmphasis(value <= limit);
   };
 
   const goTo = (moduleId: string, nextVariant: VariantKey) =>
     navigate(`/m/${moduleId}/${nextVariant}`, {
       replace: true,
-      state: { entry: 'next', fromSessionId: sessionId.current ?? undefined, checkinId: context.checkinId } satisfies PlayerContext,
+      state: { entry: 'next', fromSessionId: sessionId.current ?? undefined, checkinId: context.checkinId, state: context.state } satisfies PlayerContext,
     });
 
   const header = (
@@ -228,32 +313,57 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
             <p key={t}>{t}</p>
           ))}
           <p className="muted">{v.durationLabel}</p>
-          <ScaleButtons label={module.preMeasure.label} value={pre} onChange={setPre} />
+          {module.preMeasure && (
+            <ScaleButtons
+              label={module.preMeasure.label}
+              value={pre}
+              onChange={(val) => {
+                setPre(val);
+                emphasizeIfLow(module.preMeasure?.crisisEmphasisAtOrBelow, val);
+              }}
+            />
+          )}
         </div>
         <div className="stack">
-          <button type="button" className="btn btn-primary btn-block" onClick={() => begin(false)} disabled={pre === undefined}>
+          <button type="button" className="btn btn-primary btn-block" onClick={begin} disabled={!!module.preMeasure && pre === undefined}>
             시작하기
           </button>
-          <button type="button" className="btn-link" onClick={() => begin(true)}>
-            점수 없이 바로 시작
-          </button>
+          {module.preMeasure && (
+            <button
+              type="button"
+              className="btn-link"
+              onClick={() => {
+                setPre(undefined);
+                begin();
+              }}
+            >
+              점수 없이 바로 시작
+            </button>
+          )}
         </div>
       </div>
     );
   }
 
-  if (phase === 'post') {
+  if (phase === 'post' && module.postMeasure) {
     return (
       <div className="player">
         <div className="player-body input">
-          <ScaleButtons label={module.postMeasure.label} value={post} onChange={setPost} />
-          {pre !== undefined && <p className="muted">시작할 때: {pre}점</p>}
+          <ScaleButtons
+            label={module.postMeasure.label}
+            value={post}
+            onChange={(val) => {
+              setPost(val);
+              emphasizeIfLow(module.postMeasure?.crisisEmphasisAtOrBelow, val);
+            }}
+          />
+          {pre !== undefined && preId === postId && <p className="muted">시작할 때: {pre}점</p>}
         </div>
         <div className="stack">
-          <button type="button" className="btn btn-primary btn-block" disabled={post === undefined} onClick={() => void finishPost(post)}>
+          <button type="button" className="btn btn-primary btn-block" disabled={post === undefined} onClick={() => void complete(post)}>
             다음
           </button>
-          <button type="button" className="btn-link" onClick={() => void finishPost(undefined)}>
+          <button type="button" className="btn-link" onClick={() => void complete(undefined)}>
             건너뛰기
           </button>
         </div>
@@ -262,15 +372,14 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   }
 
   if (phase === 'outro') {
-    const nextScope = { ...scope, post: post === undefined ? {} : { [module.postMeasure.id]: post } };
     const suggestions = module.outro.next
-      .filter((n) => n.module && n.module !== module.id && getModule(n.module) && evaluate(n.if, nextScope))
+      .filter((n) => n.module && n.module !== module.id && getModule(n.module) && evaluate(n.if, scope))
       .slice(0, 2);
     const reflection = module.outro.reflection;
     return (
       <div className="player">
         <div className="player-body input">
-          <p className="say" style={{ textAlign: 'left', margin: '0 0 24px' }}>{module.outro.message}</p>
+          {!exited && <p className="say" style={{ textAlign: 'left', margin: '0 0 24px' }}>{v.outroMessage ?? module.outro.message}</p>}
           {reflection && (reflection.type === 'choice' || reflection.type === 'text' || reflection.type === 'scale') && (
             <InputView
               step={reflection}
@@ -303,19 +412,45 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
 
   // phase === 'steps'
   const step = v.steps[index];
-  const isInput = step.type === 'scale' || step.type === 'choice' || step.type === 'text';
-  const optional = 'optional' in step && step.optional;
-  const answered = answers[step.id] !== undefined && answers[step.id] !== '' && !(Array.isArray(answers[step.id]) && (answers[step.id] as unknown[]).length === 0);
-  const vars = { ...answers, before: pre };
+  const waits = stepDuration(step) === null;
+  const answered = isAnswered(step, answers[step.id]);
+  const skippable = isSkippable(step);
+  const vars = { ...templateVars(v.steps, answers), before: pre };
+
+  const forward = () => {
+    if (step.type !== 'exit') return advanceFrom(index, Date.now());
+    setExited(true);
+    finishSteps();
+  };
+  const forwardLabel = step.type === 'exit' ? '마치기' : answered || !skippable ? '다음' : '건너뛰기';
 
   return (
     <div className="player">
       {header}
-      <div className={`player-body${isInput ? ' input' : ''}`} key={`${index}-${stepStartedAt}`}>
+      <div className={`player-body${waits ? ' input' : ''}`} key={`${index}-${stepStartedAt}`}>
         {step.type === 'say' && <SayView text={step.text} emphasis={step.emphasis} vars={vars} />}
+        {step.type === 'exit' && <SayView text={step.text} vars={vars} />}
         {step.type === 'pacer' && <PacerView step={step} startedAt={stepStartedAt} />}
         {step.type === 'timer' && <TimerView step={step} startedAt={stepStartedAt} />}
-        {isInput && <InputView step={step} value={answers[step.id]} onChange={(val) => setAnswers((a) => ({ ...a, [step.id]: val }))} />}
+        {INPUT_TYPES.has(step.type) && (
+          <InputView
+            step={step as Extract<Step, { type: 'scale' | 'choice' | 'text' }>}
+            value={answers[step.id]}
+            onChange={(val) => {
+              setAnswer(step.id, val);
+              if (step.type === 'scale' && typeof val === 'number') emphasizeIfLow(step.crisisEmphasisAtOrBelow, val);
+            }}
+          />
+        )}
+        {step.type === 'worryMemo' && (
+          <WorryMemoView label={step.label} example={step.example} value={answers[step.id]} onChange={(val) => setAnswer(step.id, val)} />
+        )}
+        {step.type === 'worryReview' && <WorryReviewView onChange={(val) => setAnswer(step.id, val)} />}
+        {step.type === 'affirmation' && (
+          <AffirmationView state={context.state} settings={settings} value={answers[step.id]} onChange={(val) => setAnswer(step.id, val)} />
+        )}
+        {step.type === 'tippScreening' && <TippScreeningView onChange={(val) => setAnswer(step.id, val)} onSettings={setSettings} />}
+        {step.type === 'todaySummary' && <TodaySummaryView onChange={(val) => setAnswer(step.id, val)} />}
       </div>
       <div className="player-footer">
         <button type="button" className="btn" onClick={() => setHelpOpen(true)}>
@@ -326,12 +461,12 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
             <span key={s.id} className={i <= index ? 'on' : ''} />
           ))}
         </div>
-        {isInput ? (
-          <button type="button" className="btn btn-primary" disabled={!answered && !optional} onClick={() => advanceFrom(index, Date.now())}>
-            {answered || !optional ? '다음' : '건너뛰기'}
+        {waits ? (
+          <button type="button" className="btn btn-primary" disabled={!answered && !skippable} onClick={forward}>
+            {forwardLabel}
           </button>
         ) : (
-          <button type="button" className="btn" onClick={() => advanceFrom(index, Date.now())} aria-label="다음 단계로">
+          <button type="button" className="btn" onClick={forward} aria-label="다음 단계로">
             다음 ›
           </button>
         )}
@@ -392,12 +527,12 @@ function HelpSheet({
         <h2>잘 안 될 때</h2>
         <div className="stack">
           {module.troubleshooting.map((t, i) => (
-            <div key={t.problem} className="card" style={{ marginBottom: 0 }}>
+            <div key={t.problem}>
               <button type="button" className="choice" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)} style={{ width: '100%' }}>
                 {t.problem}
               </button>
               {open === i && (
-                <div style={{ marginTop: 12 }}>
+                <div className="card" style={{ marginTop: 4 }}>
                   <p>{t.answer}</p>
                   <div className="row">
                     {t.action && getModule(t.action) && (

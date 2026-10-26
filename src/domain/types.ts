@@ -44,11 +44,30 @@ export interface Session extends BaseRecord {
   stopReason?: 'stopSignal' | 'troubleshooting' | 'crisis' | 'user';
 }
 
+export type JournalResponse = 'approached' | 'avoided' | 'checked' | 'usedSkill' | 'endured' | 'unknown';
+
 export interface JournalEntry extends BaseRecord {
   anxiety: number;
   mood: number;
   energy: number;
   oneLine?: string;
+  anxiousMoment?: string;
+  response?: JournalResponse[];
+  responseNote?: string;
+  good?: string;
+  goodRole?: string;
+  autoSummary?: { sessions: ModuleId[]; worryNoteCount: number };
+  tomorrowTask?: string;
+}
+
+export interface WorryNote extends BaseRecord {
+  text: string;
+  anxiety?: number;
+  repeatCount: number;
+  reviewedAt?: string;
+  stillImportant?: boolean;
+  controllable?: 'yes' | 'no' | 'unsure';
+  nextAction?: string;
 }
 
 export interface Assessment extends BaseRecord {
@@ -67,6 +86,7 @@ export interface RecPick {
 
 export interface RecommendationRecord extends BaseRecord {
   checkinId: string;
+  state?: StateId;
   primary: RecPick;
   alternatives: RecPick[];
   banner?: string;
