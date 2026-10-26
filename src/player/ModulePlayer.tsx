@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getModule } from '../content/load';
 import type { ModuleContent, Step } from '../content/schema';
-import { countThoughts, getSettings, logCrisisEvent, startSession, updateRecommendation, updateSession, updateSettings } from '../db/repo';
+import { countThoughts, getSettings, latestValue, logCrisisEvent, startSession, updateRecommendation, updateSession, updateSettings } from '../db/repo';
 import { evaluate } from '../domain/conditions';
 import type { SessionEntry, Settings, StateId, VariantKey } from '../domain/types';
 import { CRISIS_EVENT, useCrisisEmphasis } from '../safety/CrisisButton';
@@ -96,6 +96,7 @@ export function ModulePlayer({
     return Object.fromEntries(Object.entries(context.carry ?? {}).filter(([k]) => ids.has(k)));
   });
   const [hasThoughts, setHasThoughts] = useState(false);
+  const [myValue, setMyValue] = useState<{ label: string; sentence?: string } | undefined>();
   const [index, setIndex] = useState(0);
   const [stepStartedAt, setStepStartedAt] = useState(() => Date.now());
   const [helpOpen, setHelpOpen] = useState(false);
@@ -122,6 +123,7 @@ export function ModulePlayer({
         );
         setAnswers((a) => ({ ...remembered, ...a }));
         setHasThoughts((await countThoughts()) > 0);
+        setMyValue(await latestValue());
         const s = await startSession({
           moduleId: module.id,
           contentVersion: module.contentVersion,
@@ -477,6 +479,15 @@ export function ModulePlayer({
         {step.type === 'exit' && <SayView text={step.text} vars={vars} />}
         {step.type === 'pacer' && <PacerView step={step} startedAt={stepStartedAt} />}
         {step.type === 'timer' && <TimerView step={step} startedAt={stepStartedAt} />}
+        {step.type === 'text' && step.showMyValue && myValue && (
+          <div className="card banner" style={{ textAlign: 'left' }}>
+            <p className="muted" style={{ margin: 0 }}>내가 적어 둔 가치</p>
+            <p style={{ margin: 0 }}>
+              <strong>{myValue.label}</strong>
+              {myValue.sentence && ` · “${myValue.sentence}”`}
+            </p>
+          </div>
+        )}
         {INPUT_TYPES.has(step.type) && (
           <InputView
             step={step as Extract<Step, { type: 'scale' | 'choice' | 'text' }>}

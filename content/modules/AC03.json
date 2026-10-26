@@ -186,7 +186,8 @@
           "type": "text",
           "label": "이 일이 나에게 왜 중요한지 하나만 떠올려 보세요. (선택)",
           "example": "그 친구와의 관계를 잃고 싶지 않아서.",
-          "optional": true
+          "optional": true,
+          "showMyValue": true
         },
         {
           "id": "s14",

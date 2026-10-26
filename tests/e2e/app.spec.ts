@@ -124,3 +124,28 @@ test('다른 모듈로 이동하면 처음부터 시작한다', async ({ page })
   await expect(page.getByRole('heading', { name: 'STOP' })).toBeVisible();
   await expect(page.getByRole('button', { name: '점수 없이 바로 시작' })).toBeVisible();
 });
+
+test('설계 5.2: 하루 대표 기분 2점 이하가 3일 연속이면 홈에 확인 카드, 하루 한 번만', async ({ page }) => {
+  await page.clock.install({ time: new Date(2026, 10, 4, 20, 0) });
+  await page.goto('/#/crisis');
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        const req = indexedDB.open('meditation');
+        req.onsuccess = () => {
+          const tx = req.result.transaction('journalEntries', 'readwrite');
+          for (const [i, d] of ['2026-11-02', '2026-11-03', '2026-11-04'].entries()) {
+            tx.objectStore('journalEntries').put({ id: `j${i}`, createdAt: `${d}T21:00:00+09:00`, localDate: d, timeOfDay: 'evening', anxiety: 6, mood: 2, energy: 3 });
+          }
+          tx.oncomplete = () => resolve();
+        };
+      }),
+  );
+  await page.goto('/#/');
+  await expect(page.getByText('요즘 많이 힘드셨던 것 같아요.')).toBeVisible();
+  await page.getByRole('link', { name: '연락처 보기' }).click();
+  await expect(page.getByRole('link', { name: /109/ })).toBeVisible();
+  await page.goto('/#/');
+  await expect(page.getByRole('link', { name: '지금 어때요?' })).toBeVisible();
+  await expect(page.getByText('요즘 많이 힘드셨던 것 같아요.')).toHaveCount(0);
+});

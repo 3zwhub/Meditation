@@ -102,3 +102,27 @@ test('명상 기준점(소리)을 한 번 고르면 다음에도 미리 골라�
   await startModule(page, 'MD02/minimal');
   await expect(page.getByRole('button', { name: '주변 소리' })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('확언에서 적은 내 가치가 기꺼이 경험하기의 "왜 중요한지"에 참고로 나온다', async ({ page }) => {
+  await startModule(page, 'AF01/basic');
+  await forward(page).click(); // 안내 문장
+  await page.getByRole('button', { name: '친절' }).click();
+  await forward(page).click();
+  await page.locator('textarea').fill('힘들 때 도움을 받은 적이 있다');
+  await forward(page).click();
+  await page.locator('textarea').fill('나는 친절한 사람이고 싶다');
+  await forward(page).click();
+  await page.getByRole('button', { name: '6점' }).click();
+  await forward(page).click();
+  await page.getByRole('button', { name: '하던 일로 돌아가기' }).click();
+
+  await startModule(page, 'AC03/basic');
+  await page.locator('textarea').fill('친구에게 연락하기');
+  for (let i = 0; i < 20; i++) {
+    if (await page.getByText('내가 적어 둔 가치').isVisible()) break;
+    if (await page.getByRole('group').count()) await page.getByRole('group').locator('button.choice').first().click();
+    if ((await page.locator('textarea').count()) && !(await page.locator('textarea').inputValue())) await page.locator('textarea').fill('테스트');
+    await forward(page).click();
+  }
+  await expect(page.getByText('나는 친절한 사람이고 싶다', { exact: false })).toBeVisible();
+});

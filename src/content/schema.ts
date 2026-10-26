@@ -47,7 +47,16 @@ export const stepSchema = z.discriminatedUnion('type', [
     // 이 설정 값으로 미리 고르고, 고르면 설정에 기억한다 (MD02의 호흡/소리)
     setting: z.literal('meditationAnchor').optional(),
   }),
-  z.object({ ...base, type: z.literal('text'), label: z.string(), placeholder: z.string().optional(), example: z.string().optional(), optional: z.boolean().optional() }),
+  z.object({
+    ...base,
+    type: z.literal('text'),
+    label: z.string(),
+    placeholder: z.string().optional(),
+    example: z.string().optional(),
+    optional: z.boolean().optional(),
+    // 확언(AF01)에서 적어 둔 내 가치를 참고로 보여준다 (1단계 7.2의 9번)
+    showMyValue: z.boolean().optional(),
+  }),
   // 모듈을 여기서 끝낸다 (DB03의 "불안이 사실에 맞는 경우" 등). 보통 showIf와 함께 쓴다
   z.object({ ...base, type: z.literal('exit'), text: z.string().min(1) }),
   // CB03: 걱정 한 줄을 걱정 메모로 저장
