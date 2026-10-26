@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { getDB } from './db/db';
 import { getSettings } from './db/repo';
+import { applyAppearance } from './ui/appearance';
 import './ui/styles.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,9 +16,7 @@ createRoot(document.getElementById('root')!).render(
 void (async () => {
   try {
     await getDB().open();
-    const s = await getSettings();
-    document.documentElement.style.setProperty('--text-scale', String(s.textScale));
-    if (s.theme !== 'system') document.documentElement.dataset.theme = s.theme;
+    applyAppearance(await getSettings());
   } catch (e) {
     console.error('기록 저장소를 열지 못했어요', e);
   }
