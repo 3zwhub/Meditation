@@ -1,0 +1,440 @@
+{
+  "id": "BR02",
+  "contentVersion": 1,
+  "name": "느린 호흡",
+  "summary": "4초 들이쉬고 6초 내쉬며, 숨의 속도를 천천히 늦춰요.",
+  "category": "breath",
+  "mechanisms": [
+    "m1"
+  ],
+  "states": {
+    "suitable": [
+      "B",
+      "C",
+      "F"
+    ],
+    "avoid": [
+      {
+        "when": "checkin.anxiety>=8",
+        "use": [
+          "BR01",
+          "GR01"
+        ],
+        "reason": "숨을 세는 것 자체가 버거울 때"
+      }
+    ]
+  },
+  "kind": "calming",
+  "evidence": {
+    "level": "moderate",
+    "note": "분당 6회 안팎의 느린 호흡은 심박변이도를 높이고 주관적 불안을 낮추는 경향이 여러 연구에서 보고되었어요(Zaccaro et al., 2018). 연구마다 방법과 대상이 달라 효과 크기는 단정하기 어려워요."
+  },
+  "intro": [
+    "불안할 때 숨은 저절로 짧고 빨라져요. 숨을 천천히, 특히 내쉬는 숨을 길게 쉬면 몸이 긴장을 낮추는 쪽으로 움직이는 데 도움이 될 수 있어요.",
+    "화면의 원이 커질 때 들이쉬고, 작아질 때 내쉬기만 하면 돼요."
+  ],
+  "preMeasure": {
+    "id": "anxiety",
+    "label": "지금 불안·긴장은 몇 점인가요?"
+  },
+  "postMeasure": {
+    "id": "anxiety",
+    "label": "지금 불안·긴장은 몇 점인가요?"
+  },
+  "variants": {
+    "minimal": {
+      "durationLabel": "1분",
+      "estimatedSec": 65,
+      "steps": [
+        {
+          "id": "speed",
+          "type": "choice",
+          "label": "속도 선택",
+          "options": [
+            {
+              "value": "normal",
+              "label": "기본(4초-6초)"
+            },
+            {
+              "value": "short",
+              "label": "더 짧게(3초-5초)"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "id": "p1",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 4
+            },
+            {
+              "phase": "out",
+              "sec": 6
+            }
+          ],
+          "cycles": 6,
+          "cycleCues": [
+            {
+              "in": "원이 커지면 코로 들이쉬세요. 하나, 둘, 셋, 넷.",
+              "out": "원이 작아지면 천천히 내쉬세요. 하나, 둘, 셋, 넷, 다섯, 여섯."
+            },
+            {
+              "in": "한 번 더. 들이쉬고…",
+              "out": "내쉬고…"
+            },
+            {
+              "in": "이제 원을 따라 혼자 이어가 보세요."
+            }
+          ],
+          "showIf": "answer.speed != 'short'"
+        },
+        {
+          "id": "p1s",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 3
+            },
+            {
+              "phase": "out",
+              "sec": 5
+            }
+          ],
+          "cycles": 8,
+          "cycleCues": [
+            {
+              "in": "원이 커지면 코로 들이쉬세요. 하나, 둘, 셋, 넷.",
+              "out": "원이 작아지면 천천히 내쉬세요. 하나, 둘, 셋, 넷, 다섯, 여섯."
+            },
+            {
+              "in": "한 번 더. 들이쉬고…",
+              "out": "내쉬고…"
+            },
+            {
+              "in": "이제 원을 따라 혼자 이어가 보세요."
+            }
+          ],
+          "showIf": "answer.speed == 'short'"
+        },
+        {
+          "id": "s9",
+          "type": "say",
+          "text": "잘하셨어요."
+        }
+      ]
+    },
+    "basic": {
+      "durationLabel": "3분",
+      "estimatedSec": 180,
+      "steps": [
+        {
+          "id": "speed",
+          "type": "choice",
+          "label": "속도 선택",
+          "options": [
+            {
+              "value": "normal",
+              "label": "기본(4초-6초)"
+            },
+            {
+              "value": "short",
+              "label": "더 짧게(3초-5초)"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "id": "s1",
+          "type": "say",
+          "text": "편하게 앉거나 누워 보세요. 한 손을 배 위에 얹어도 좋아요.",
+          "pauseSec": 3
+        },
+        {
+          "id": "s2",
+          "type": "say",
+          "text": "먼저 지금 숨을 그대로 느껴 보세요. 바꾸려 하지 않아도 돼요.",
+          "pauseSec": 5
+        },
+        {
+          "id": "s3",
+          "type": "say",
+          "text": "이제 원을 따라 숨의 속도를 조금 늦춰 볼게요."
+        },
+        {
+          "id": "s4",
+          "type": "say",
+          "text": "숨을 크게 쉴 필요는 없어요. 평소 양 그대로, 속도만 천천히요.",
+          "pauseSec": 2
+        },
+        {
+          "id": "p1",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 4
+            },
+            {
+              "phase": "out",
+              "sec": 6
+            }
+          ],
+          "cycles": 14,
+          "cycleCues": [
+            {
+              "in": "원이 커지면 코로 들이쉬세요. 배 위의 손이 살짝 올라오는 걸 느껴 보세요.",
+              "out": "원이 작아지면 입이나 코로 천천히 내쉬세요."
+            }
+          ],
+          "cues": [
+            {
+              "atSec": 30,
+              "text": "내쉬는 숨이 끝날 때, 몸이 의자나 바닥에 조금 더 기대는 걸 느껴 보세요."
+            },
+            {
+              "atSec": 70,
+              "text": "생각이 다른 곳으로 가는 건 자연스러운 일이에요. 알아차리면 원으로 돌아오면 돼요."
+            },
+            {
+              "atSec": 100,
+              "text": "숨이 부족하게 느껴지면 '더 짧게' 속도로 바꾸거나, 편한 대로 쉬어도 괜찮아요."
+            },
+            {
+              "atSec": 130,
+              "text": "지금 이 순간에는 숨 쉬는 것 말고 할 일이 없어요."
+            }
+          ],
+          "showIf": "answer.speed != 'short'"
+        },
+        {
+          "id": "p1s",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 3
+            },
+            {
+              "phase": "out",
+              "sec": 5
+            }
+          ],
+          "cycles": 18,
+          "cycleCues": [
+            {
+              "in": "원이 커지면 코로 들이쉬세요. 배 위의 손이 살짝 올라오는 걸 느껴 보세요.",
+              "out": "원이 작아지면 입이나 코로 천천히 내쉬세요."
+            }
+          ],
+          "cues": [
+            {
+              "atSec": 30,
+              "text": "내쉬는 숨이 끝날 때, 몸이 의자나 바닥에 조금 더 기대는 걸 느껴 보세요."
+            },
+            {
+              "atSec": 70,
+              "text": "생각이 다른 곳으로 가는 건 자연스러운 일이에요. 알아차리면 원으로 돌아오면 돼요."
+            },
+            {
+              "atSec": 100,
+              "text": "숨이 부족하게 느껴지면 '더 짧게' 속도로 바꾸거나, 편한 대로 쉬어도 괜찮아요."
+            },
+            {
+              "atSec": 130,
+              "text": "지금 이 순간에는 숨 쉬는 것 말고 할 일이 없어요."
+            }
+          ],
+          "showIf": "answer.speed == 'short'"
+        },
+        {
+          "id": "s5",
+          "type": "say",
+          "text": "마지막 숨이에요."
+        },
+        {
+          "id": "p2",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 4
+            },
+            {
+              "phase": "out",
+              "sec": 6
+            }
+          ],
+          "cycles": 1,
+          "showIf": "answer.speed != 'short'"
+        },
+        {
+          "id": "p2s",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 3
+            },
+            {
+              "phase": "out",
+              "sec": 5
+            }
+          ],
+          "cycles": 1,
+          "showIf": "answer.speed == 'short'"
+        },
+        {
+          "id": "s6",
+          "type": "say",
+          "text": "이제 원을 놓아주고 평소처럼 숨 쉬세요.",
+          "pauseSec": 5
+        }
+      ]
+    },
+    "extended": {
+      "durationLabel": "5분",
+      "estimatedSec": 300,
+      "steps": [
+        {
+          "id": "speed",
+          "type": "choice",
+          "label": "속도 선택",
+          "options": [
+            {
+              "value": "normal",
+              "label": "기본(4초-6초)"
+            },
+            {
+              "value": "short",
+              "label": "더 짧게(3초-5초)"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "id": "s1",
+          "type": "say",
+          "text": "편하게 앉거나 누워 보세요. 한 손을 배 위에 얹어도 좋아요.",
+          "pauseSec": 3
+        },
+        {
+          "id": "s4",
+          "type": "say",
+          "text": "숨을 크게 쉴 필요는 없어요. 평소 양 그대로, 속도만 천천히요.",
+          "pauseSec": 2
+        },
+        {
+          "id": "p1",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 4
+            },
+            {
+              "phase": "out",
+              "sec": 6
+            }
+          ],
+          "cycles": 27,
+          "cycleCues": [
+            {
+              "in": "원이 커지면 코로 들이쉬세요. 배 위의 손이 살짝 올라오는 걸 느껴 보세요.",
+              "out": "원이 작아지면 입이나 코로 천천히 내쉬세요."
+            }
+          ],
+          "showIf": "answer.speed != 'short'"
+        },
+        {
+          "id": "p1s",
+          "type": "pacer",
+          "pattern": [
+            {
+              "phase": "in",
+              "sec": 3
+            },
+            {
+              "phase": "out",
+              "sec": 5
+            }
+          ],
+          "cycles": 34,
+          "cycleCues": [
+            {
+              "in": "원이 커지면 코로 들이쉬세요. 배 위의 손이 살짝 올라오는 걸 느껴 보세요.",
+              "out": "원이 작아지면 입이나 코로 천천히 내쉬세요."
+            }
+          ],
+          "showIf": "answer.speed == 'short'"
+        },
+        {
+          "id": "s6",
+          "type": "say",
+          "text": "이제 원을 놓아주고 평소처럼 숨 쉬세요.",
+          "pauseSec": 5
+        }
+      ]
+    }
+  },
+  "outro": {
+    "message": "숨을 고른 지금이 다음 일을 하기 좋은 때예요. 불안이 조금 남아 있어도, 그 상태로 시작할 수 있어요.",
+    "reflection": {
+      "id": "r1",
+      "type": "text",
+      "label": "지금 바로 하고 싶은 일, 또는 해야 할 일 하나는 무엇인가요?",
+      "optional": true
+    },
+    "next": [
+      {
+        "if": "post.anxiety>=4",
+        "module": "CB01",
+        "variant": "minimal"
+      },
+      {
+        "if": "true",
+        "module": "AC03",
+        "variant": "minimal"
+      },
+      {
+        "if": "true",
+        "action": "returnToTask"
+      }
+    ]
+  },
+  "troubleshooting": [
+    {
+      "problem": "6초 내쉬기가 너무 길어요",
+      "answer": "'더 짧게(3초-5초)'로 바꾸세요. 중요한 건 숫자가 아니라 내쉬는 숨이 들이쉬는 숨보다 조금 긴 것이에요."
+    },
+    {
+      "problem": "숨이 부족하고 답답해요",
+      "answer": "숨을 너무 깊게 쉬려 하고 있을 수 있어요. 양은 평소처럼, 속도만 늦추세요. 답답함이 커지면 멈추고 평소 숨으로 돌아오세요.",
+      "action": "GR01"
+    },
+    {
+      "problem": "숫자를 세다 보면 더 긴장돼요",
+      "answer": "숫자를 세지 말고 원만 보세요. 원도 부담스러우면 소리 신호 모드를 쓰세요."
+    },
+    {
+      "problem": "졸려요",
+      "answer": "잠들기 전이라면 괜찮아요. 낮이라면 눈을 뜨고 앉은 자세로 해보세요."
+    }
+  ],
+  "stopSignals": [
+    {
+      "text": "숨이 막히는 느낌이 공황으로 커지거나, 어지러움이나 손발 저림이 계속돼요 → 멈추고 눈을 뜬 채 바깥 감각에 집중해 보세요.",
+      "action": "GR01"
+    },
+    {
+      "text": "자해나 죽음에 대한 생각이 들어요",
+      "action": "crisis"
+    }
+  ],
+  "references": [
+    "zaccaro2018"
+  ]
+}

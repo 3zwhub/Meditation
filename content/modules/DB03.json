@@ -1,0 +1,591 @@
+{
+  "id": "DB03",
+  "contentVersion": 2,
+  "name": "반대 행동",
+  "summary": "불안이 피하라고 할 때, 아주 작은 한 걸음 다가가서 예상이 맞는지 확인해요.",
+  "category": "dbt",
+  "mechanisms": [
+    "m3",
+    "m4"
+  ],
+  "states": {
+    "suitable": [
+      "C"
+    ],
+    "avoid": [
+      {
+        "when": "checkin.anxiety>=8",
+        "use": [
+          "BR01",
+          "GR01"
+        ],
+        "reason": "먼저 각성을 낮춘 뒤"
+      }
+    ]
+  },
+  "kind": "approach",
+  "evidence": {
+    "level": "preliminary",
+    "note": "불안에 대한 반대 행동은 \"다가가기\"이며 원리상 노출과 같아요. 노출 기반 CBT의 효과는 강한 근거가 있어요(Hofmann & Smits, 2008; Carpenter et al., 2018). 반대 행동 기술 하나만 따로 검증한 연구는 적어요."
+  },
+  "intro": [
+    "불안은 \"피해!\"라고 말해요. 피하면 당장은 편하지만, 뇌는 \"피해서 살았다\"만 배우고 다음엔 더 크게 경보를 울려요.",
+    "이 연습은 불안이 시키는 것과 반대로, 아주 작은 한 걸음 다가가 보는 거예요. 그리고 걱정했던 일이 실제로 일어나는지 확인해 봐요."
+  ],
+  "preMeasure": {
+    "id": "anxiety",
+    "label": "지금 불안은 몇 점인가요?"
+  },
+  "postMeasure": {
+    "id": "anxiety",
+    "label": "지금 불안은 몇 점인가요?"
+  },
+  "variants": {
+    "minimal": {
+      "durationLabel": "1분 + 실행",
+      "estimatedSec": 90,
+      "steps": [
+        {
+          "id": "task",
+          "type": "text",
+          "label": "다가가고 싶은 일은 무엇인가요?",
+          "example": "친구에게 먼저 연락하기"
+        },
+        {
+          "id": "danger",
+          "type": "choice",
+          "label": "이 일을 하면 실제로 위험한 일이 생기나요? (몸을 다치거나, 법적·경제적으로 큰 손해를 보는 등)",
+          "options": [
+            {
+              "value": "no",
+              "label": "아니요, 불편할 뿐이에요"
+            },
+            {
+              "value": "yes",
+              "label": "네, 실제로 위험해요"
+            },
+            {
+              "value": "unsure",
+              "label": "잘 모르겠어요"
+            }
+          ]
+        },
+        {
+          "id": "e1",
+          "type": "exit",
+          "text": "그렇다면 불안은 나를 지키는 신호예요. 반대 행동 대신, 어떻게 안전하게 다룰지 생각해 봐요.",
+          "showIf": "answer.danger == 'yes'"
+        },
+        {
+          "id": "f1",
+          "type": "choice",
+          "label": "이 일을 하면 몸을 다치거나 큰 손해를 볼 가능성이 높은가요?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "예"
+            },
+            {
+              "value": "no",
+              "label": "아니요"
+            }
+          ],
+          "showIf": "answer.danger == 'unsure'"
+        },
+        {
+          "id": "f2",
+          "type": "choice",
+          "label": "내가 예상하는 나쁜 결과가, 지난 경험에 비춰 자주 일어났나요?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "예"
+            },
+            {
+              "value": "no",
+              "label": "아니요"
+            }
+          ],
+          "showIf": "answer.danger == 'unsure'"
+        },
+        {
+          "id": "f3",
+          "type": "choice",
+          "label": "친구가 같은 상황이라면 \"그건 피하는 게 맞아\"라고 말해 줄까요?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "예"
+            },
+            {
+              "value": "no",
+              "label": "아니요"
+            }
+          ],
+          "showIf": "answer.danger == 'unsure'"
+        },
+        {
+          "id": "e2",
+          "type": "exit",
+          "text": "불안이 사실에 맞을 수 있어요. 반대 행동보다, 위험을 줄이는 방법을 먼저 생각해 봐요.",
+          "showIf": "answer.danger == 'unsure' && (answer.f1 == 'yes' || answer.f2 == 'yes' || answer.f3 == 'yes')"
+        },
+        {
+          "id": "firstStep",
+          "type": "text",
+          "label": "{task}을 향한 가장 작은 첫걸음은 무엇인가요? 5분 안에, 지금 바로 할 수 있는 것으로요.",
+          "example": "메신저 창을 열고 '잘 지내?' 한 줄 쓰기(보내기까지는 안 해도 됨)"
+        },
+        {
+          "id": "s1",
+          "type": "say",
+          "text": "불안이 있어도 괜찮아요. 불안을 데리고 지금 그 한 걸음을 해보세요."
+        },
+        {
+          "id": "did",
+          "type": "choice",
+          "label": "어떻게 됐나요?",
+          "options": [
+            {
+              "value": "done",
+              "label": "했어요"
+            },
+            {
+              "value": "notNow",
+              "label": "지금은 못 하겠어요"
+            },
+            {
+              "value": "later",
+              "label": "나중에 할게요"
+            }
+          ]
+        },
+        {
+          "id": "when",
+          "type": "choice",
+          "label": "언제 해볼까요?",
+          "options": [
+            {
+              "value": "오늘 중",
+              "label": "오늘 중"
+            },
+            {
+              "value": "내일",
+              "label": "내일"
+            },
+            {
+              "value": "이번 주 안에",
+              "label": "이번 주 안에"
+            }
+          ],
+          "showIf": "answer.did == 'later'"
+        },
+        {
+          "id": "e3",
+          "type": "exit",
+          "text": "좋아요. 정한 때에 해보고, 홈 화면의 '예정된 다가가기'에서 결과를 기록해 보세요.",
+          "showIf": "answer.did == 'later'"
+        },
+        {
+          "id": "smaller",
+          "type": "text",
+          "label": "더 작게 나눠 볼까요? 더 작은 첫걸음을 적어 보세요.",
+          "example": "친구 이름 검색하기",
+          "showIf": "answer.did == 'notNow'"
+        },
+        {
+          "id": "s2",
+          "type": "say",
+          "text": "불안이 있어도 괜찮아요. 불안을 데리고 지금 그 한 걸음을 해보세요.",
+          "showIf": "answer.did == 'notNow'"
+        }
+      ]
+    },
+    "basic": {
+      "durationLabel": "3분 + 실행 + 기록",
+      "estimatedSec": 240,
+      "steps": [
+        {
+          "id": "task",
+          "type": "text",
+          "label": "다가가고 싶은 일은 무엇인가요?",
+          "example": "회의에서 의견 말하기"
+        },
+        {
+          "id": "urge",
+          "type": "choice",
+          "label": "지금 불안은 나에게 무엇을 하라고 하나요?",
+          "options": [
+            {
+              "value": "avoid",
+              "label": "피하기"
+            },
+            {
+              "value": "delay",
+              "label": "미루기"
+            },
+            {
+              "value": "check",
+              "label": "확인하기(검색, 다시 보기)"
+            },
+            {
+              "value": "reassure",
+              "label": "안심 구하기(누군가에게 물어보기)"
+            },
+            {
+              "value": "hide",
+              "label": "숨기"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "id": "s1",
+          "type": "say",
+          "text": "이 불안은 상황의 사실에 맞나요?"
+        },
+        {
+          "id": "s2",
+          "type": "say",
+          "text": "실제 위험이 있고, 그 위험이 클 가능성이 높다면 불안은 사실에 맞아요. 위험이 작거나, 가능성이 낮거나, 불편할 뿐이라면 불안이 사실보다 커진 거예요."
+        },
+        {
+          "id": "f1",
+          "type": "choice",
+          "label": "이 일을 하면 몸을 다치거나 큰 손해를 볼 가능성이 높은가요?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "예"
+            },
+            {
+              "value": "no",
+              "label": "아니요"
+            }
+          ]
+        },
+        {
+          "id": "f2",
+          "type": "choice",
+          "label": "내가 예상하는 나쁜 결과가, 지난 경험에 비춰 자주 일어났나요?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "예"
+            },
+            {
+              "value": "no",
+              "label": "아니요"
+            }
+          ]
+        },
+        {
+          "id": "f3",
+          "type": "choice",
+          "label": "친구가 같은 상황이라면 \"그건 피하는 게 맞아\"라고 말해 줄까요?",
+          "options": [
+            {
+              "value": "yes",
+              "label": "예"
+            },
+            {
+              "value": "no",
+              "label": "아니요"
+            }
+          ]
+        },
+        {
+          "id": "e1",
+          "type": "exit",
+          "text": "불안이 사실에 맞을 수 있어요. 반대 행동보다, 위험을 줄이는 방법을 먼저 생각해 봐요.",
+          "showIf": "answer.f1 == 'yes' || answer.f2 == 'yes' || answer.f3 == 'yes'"
+        },
+        {
+          "id": "s3",
+          "type": "say",
+          "text": "{task}을 쉬운 단계부터 어려운 단계로 3개 정도로 나눠 보세요. 각 단계를 할 때 불안이 몇 점쯤일지도 적어 보세요."
+        },
+        {
+          "id": "l1",
+          "type": "text",
+          "label": "1단계 (가장 쉬운 것)",
+          "example": "회의 전에 하고 싶은 말을 한 문장으로 적어 두기"
+        },
+        {
+          "id": "l1a",
+          "type": "scale",
+          "label": "1단계를 할 때 예상 불안",
+          "min": 0,
+          "max": 10
+        },
+        {
+          "id": "l2",
+          "type": "text",
+          "label": "2단계",
+          "example": "회의에서 다른 사람 의견에 \"저도 동의해요\" 한마디 하기"
+        },
+        {
+          "id": "l2a",
+          "type": "scale",
+          "label": "2단계를 할 때 예상 불안",
+          "min": 0,
+          "max": 10
+        },
+        {
+          "id": "l3",
+          "type": "text",
+          "label": "3단계 (가장 어려운 것, 선택)",
+          "example": "회의에서 내 개선안 하나를 직접 말하기",
+          "optional": true
+        },
+        {
+          "id": "l3a",
+          "type": "scale",
+          "label": "3단계를 할 때 예상 불안",
+          "min": 0,
+          "max": 10,
+          "showIf": "answer.l3"
+        },
+        {
+          "id": "s4",
+          "type": "say",
+          "text": "오늘은 이 중에서 예상 불안이 4~6점쯤인 단계 하나를 골라 보세요. 너무 쉬우면 배울 게 적고, 너무 어려우면 다시 피하고 싶어져요."
+        },
+        {
+          "id": "ladderStep",
+          "type": "choice",
+          "label": "오늘 할 단계",
+          "options": [
+            {
+              "value": "1",
+              "label": "1단계"
+            },
+            {
+              "value": "2",
+              "label": "2단계"
+            },
+            {
+              "value": "3",
+              "label": "3단계"
+            }
+          ]
+        },
+        {
+          "id": "prediction",
+          "type": "text",
+          "label": "이 단계를 하면 어떤 일이 일어날 것 같나요? 가장 걱정되는 결과를 적어 보세요.",
+          "example": "말하는 순간 목소리가 떨리고, 다들 이상하게 쳐다볼 것이다."
+        },
+        {
+          "id": "confidence",
+          "type": "scale",
+          "label": "그 결과가 일어날 거라고 얼마나 확신하나요?",
+          "min": 0,
+          "max": 100
+        },
+        {
+          "id": "safetyBehavior",
+          "type": "choice",
+          "label": "이 일을 할 때 '안전하려고' 하는 행동이 있나요? 이번에는 그중 하나를 내려놓아 볼 수 있을까요?",
+          "options": [
+            {
+              "value": "script",
+              "label": "미리 할 말 다 적어서 읽기"
+            },
+            {
+              "value": "eyes",
+              "label": "눈 맞춤 피하기"
+            },
+            {
+              "value": "rush",
+              "label": "최대한 빨리 끝내기"
+            },
+            {
+              "value": "company",
+              "label": "누군가 옆에 있어야만 하기"
+            },
+            {
+              "value": "phone",
+              "label": "휴대폰 보며 딴청"
+            },
+            {
+              "value": "none",
+              "label": "없음"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "id": "s5",
+          "type": "say",
+          "text": "처음엔 하나만, 조금만 내려놓아도 충분해요.",
+          "showIf": "answer.safetyBehavior && answer.safetyBehavior != 'none'"
+        },
+        {
+          "id": "s6",
+          "type": "say",
+          "text": "이제 불안을 데리고 그 단계를 해보세요."
+        },
+        {
+          "id": "s7",
+          "type": "say",
+          "text": "하는 동안 불안이 올라가도 괜찮아요. 불안이 내려갈 때까지 기다릴 필요도 없어요. 예상했던 일이 실제로 일어나는지만 지켜보세요."
+        },
+        {
+          "id": "go",
+          "type": "choice",
+          "label": "언제 할까요?",
+          "options": [
+            {
+              "value": "now",
+              "label": "지금 할게요"
+            },
+            {
+              "value": "later",
+              "label": "시각 정하기"
+            }
+          ]
+        },
+        {
+          "id": "when",
+          "type": "choice",
+          "label": "언제 해볼까요?",
+          "options": [
+            {
+              "value": "오늘 중",
+              "label": "오늘 중"
+            },
+            {
+              "value": "내일",
+              "label": "내일"
+            },
+            {
+              "value": "이번 주 안에",
+              "label": "이번 주 안에"
+            }
+          ],
+          "showIf": "answer.go == 'later'"
+        },
+        {
+          "id": "e2",
+          "type": "exit",
+          "text": "좋아요. 정한 때에 해보고, 홈 화면의 '예정된 다가가기'에서 결과를 기록해 보세요.",
+          "showIf": "answer.go == 'later'"
+        },
+        {
+          "id": "outcome",
+          "type": "text",
+          "label": "다녀오셨다면, 실제로 어떤 일이 일어났나요?",
+          "example": "목소리가 조금 떨렸지만, 옆자리 동료가 고개를 끄덕였다. 이상하게 쳐다보는 사람은 없었다."
+        },
+        {
+          "id": "cameTrue",
+          "type": "choice",
+          "label": "예상한 일이 일어났나요?",
+          "options": [
+            {
+              "value": "none",
+              "label": "전혀"
+            },
+            {
+              "value": "partly",
+              "label": "일부"
+            },
+            {
+              "value": "fully",
+              "label": "그대로"
+            },
+            {
+              "value": "worse",
+              "label": "예상보다 더 나빴음"
+            }
+          ]
+        },
+        {
+          "id": "peak",
+          "type": "scale",
+          "label": "실행 중 가장 높았던 불안",
+          "min": 0,
+          "max": 10
+        },
+        {
+          "id": "learned",
+          "type": "text",
+          "label": "이 경험에서 새로 알게 된 것은 무엇인가요?",
+          "example": "떨려도 말은 할 수 있다. 사람들은 내 떨림을 생각만큼 신경 쓰지 않는다.",
+          "optional": true
+        },
+        {
+          "id": "s8",
+          "type": "say",
+          "text": "생각보다 힘들었네요. 그래도 그 상황을 지나왔어요. 다음엔 사다리에서 한 칸 더 쉬운 단계로 해보거나, 안전행동은 그대로 두고 해봐도 괜찮아요. 무엇이 힘들었는지는 저녁 기록에 남겨 두세요.",
+          "showIf": "answer.cameTrue == 'worse'"
+        }
+      ]
+    }
+  },
+  "outro": {
+    "message": "한 걸음 다가갔어요. 불안이 높았어도, 그 상태로 해냈다는 게 가장 중요한 기록이에요.",
+    "reflection": {
+      "id": "r1",
+      "type": "text",
+      "label": "다음에 같은 상황이 오면, 불안이 '피해!'라고 할 때 나는 나에게 뭐라고 말해 줄 수 있을까요?",
+      "optional": true
+    },
+    "next": [
+      {
+        "if": "post.anxiety>=6",
+        "module": "BR02",
+        "variant": "basic"
+      },
+      {
+        "if": "answer.f1 == 'yes' || answer.f2 == 'yes' || answer.f3 == 'yes' || answer.danger == 'yes'",
+        "module": "CB02",
+        "variant": "basic"
+      },
+      {
+        "if": "true",
+        "action": "returnToTask"
+      }
+    ]
+  },
+  "troubleshooting": [
+    {
+      "problem": "가장 작은 첫걸음도 못 하겠어요",
+      "answer": "더 작게 나눠 보세요. \"친구에게 연락하기\"가 어렵다면 \"친구 이름 검색하기\", 그것도 어렵다면 \"친구에게 보낼 말을 메모장에 써 보기\". 아무리 작아도 다가간 거예요."
+    },
+    {
+      "problem": "했는데도 불안이 안 줄었어요",
+      "answer": "이 연습의 목표는 불안을 줄이는 게 아니라, 예상했던 일이 실제로 일어나는지 확인하는 거예요. 7번의 \"예상한 일이 일어났나요?\"를 다시 보세요. 불안은 반복할수록 천천히 줄어드는 경우가 많아요."
+    },
+    {
+      "problem": "하고 나서 \"운이 좋았을 뿐\"이라는 생각이 들어요",
+      "answer": "불안은 좋은 결과를 우연으로 돌리곤 해요. 같은 단계를 2~3번 더 반복해 보세요. 여러 번 확인하면 우연이라고 말하기 어려워져요."
+    },
+    {
+      "problem": "안전행동을 내려놓기가 너무 무서워요",
+      "answer": "이번에는 안전행동을 그대로 두고 다가가는 것만 해도 괜찮아요. 익숙해지면 하나씩 줄여 보세요."
+    },
+    {
+      "problem": "정말 나쁜 일이 일어났어요",
+      "answer": "그건 정말 힘든 경험이에요. 먼저 BR02로 나를 돌봐 주세요. 그 일이 실제로 얼마나 큰 영향을 주는지, 내가 어떻게 대처할 수 있는지는 CB02로 정리해 볼 수 있어요.",
+      "action": "BR02"
+    }
+  ],
+  "stopSignals": [
+    {
+      "text": "실행 중 불안이 9~10점으로 치솟아 공황 증상이 나타나요 (그 자리에서 멈춰도 돼요. 멈춘 것도 실패가 아니에요)",
+      "action": "GR01"
+    },
+    {
+      "text": "다가가려는 일이 위험한 행동(자해, 과음, 위험한 장소 가기 등)이에요",
+      "action": "crisis"
+    }
+  ],
+  "references": [
+    "hofmann2008",
+    "carpenter2018",
+    "craske2014"
+  ],
+  "record": "approach"
+}

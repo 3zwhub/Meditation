@@ -1,0 +1,218 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AFFIRMATIONS, ASSESSMENTS, assessmentReady, catalog, getModule } from '../content/load';
+import {
+  dailyLowMoodOrEnergy,
+  getMeta,
+  getSettings,
+  latestValue,
+  listAssessments,
+  plannedApproachAttempts,
+  recentHistory,
+  setMeta,
+  todayActivity,
+  todayStatus,
+} from '../db/repo';
+import { assessmentDue, persistentLowMood } from '../domain/assessments';
+import { localDate } from '../domain/day';
+import { fillAffirmation } from '../domain/affirmations';
+import { quickStartPicks } from '../domain/recommend';
+import { DEFAULT_SETTINGS, type ApproachAttempt } from '../domain/types';
+import { evaluateSafety } from '../safety/evaluate';
+import type { PlayerContext } from '../player/ModulePlayer';
+
+const DEFAULT_QUICK = ['BR01', 'GR01', 'DB02'];
+
+export function Home() {
+  const navigate = useNavigate();
+  const [quick, setQuick] = useState<string[]>(DEFAULT_QUICK.filter((id) => getModule(id)));
+  const [doneToday, setDoneToday] = useState(0);
+  const [approached, setApproached] = useState<string[]>([]);
+  const [planned, setPlanned] = useState<ApproachAttempt[]>([]);
+  const [status, setStatus] = useState<Awaited<ReturnType<typeof todayStatus>> | null>(null);
+  const [myValue, setMyValue] = useState<string | undefined>();
+  // 척도 실시 안내 (설계 4.1): 문항이 준비된 척도만
+  const [dueAssessments, setDueAssessments] = useState<string[]>([]);
+  const [suggestPHQ, setSuggestPHQ] = useState(false);
+  const [lowMood, setLowMood] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const now = new Date();
+        const settings = await getSettings();
+        const h = await recentHistory(now);
+        const today = localDate(now, settings.dayBoundaryHour);
+        setQuick(quickStartPicks({ settings, sessions: h.sessions, now, catalog: catalog() }));
+        setDoneToday(h.sessions.filter((s) => s.localDate === today && s.status === 'completed').length);
+        setApproached((await todayActivity(now)).approached.map((a) => a.action));
+        setPlanned(await plannedApproachAttempts());
+        setStatus(await todayStatus(now));
+        setMyValue((await latestValue())?.label);
+        const ready = [...ASSESSMENTS.values()].filter(assessmentReady);
+        const due: string[] = [];
+        for (const a of ready) if (assessmentDue((await listAssessments(a.id))[0], today)) due.push(a.id);
+        setDueAssessments(due);
+        setSuggestPHQ(
+          ready.some((a) => a.id === 'PHQ9') && !due.includes('PHQ9') && persistentLowMood(await dailyLowMoodOrEnergy(now), today),
+        );
+        const notice = evaluateSafety({
+          now,
+          journals: h.journals,
+          checkins: h.checkins,
+          boundaryHour: settings.dayBoundaryHour,
+          lowMoodShownOn: await getMeta<string>('lowMoodShownOn'),
+        });
+        if (notice) {
+          setLowMood(true);
+          await setMeta('lowMoodShownOn', today);
+        }
+      } catch (e) {
+        // 기록을 못 읽어도 바로 시작과 위기 안내는 쓸 수 있어야 한다
+        console.error(e);
+        setLoadError(true);
+        setQuick(quickStartPicks({ settings: DEFAULT_SETTINGS, sessions: [], now: new Date(), catalog: catalog() }));
+      }
+    })();
+  }, []);
+
+  const start = (id: string) =>
+    navigate(`/m/${id}/minimal`, { state: { entry: 'quickStart' } satisfies PlayerContext });
+
+  const todayAffirmation = status?.affirmation && AFFIRMATIONS.find((a) => a.id === status.affirmation!.id);
+  const fillValue = (t: string) => fillAffirmation(t, myValue);
+
+  const today = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
+
+  return (
+    <div>
+      <p className="muted" style={{ marginTop: 8 }}>{today}</p>
+
+      {lowMood && (
+        <div className="card notice" role="status">
+          <p><strong>요즘 많이 힘드셨던 것 같아요.</strong></p>
+          <p>기분이 며칠째 많이 가라앉아 있어요. 혼자 견디지 않아도 괜찮아요. 이야기할 사람이 필요하면 언제든 연락할 수 있어요.</p>
+          <div className="row">
+            <Link className="btn" to="/crisis">연락처 보기</Link>
+            <button type="button" className="btn-link" onClick={() => setLowMood(false)}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      <Link to="/checkin" className="btn btn-primary btn-big" style={{ margin: '8px 0 24px' }}>
+        지금 어때요?
+      </Link>
+
+      <h2>바로 시작</h2>
+      <div className="quick">
+        {quick.map((id) => {
+          const m = getModule(id);
+          if (!m) return null;
+          return (
+            <button key={id} type="button" className="btn" onClick={() => start(id)}>
+              {m.name}
+              <small>{m.variants.minimal.durationLabel}</small>
+            </button>
+          );
+        })}
+      </div>
+
+      <Link to="/worry" className="btn btn-block" style={{ marginTop: 12 }}>
+        + 걱정 메모
+      </Link>
+
+      {(dueAssessments.length > 0 || suggestPHQ) && (
+        <div className="card banner">
+          {suggestPHQ ? (
+            <p>2주 넘게 기분이나 에너지가 많이 낮았어요. 지금 상태를 돌아보는 짧은 검사를 해볼 수 있어요.</p>
+          ) : (
+            <p>2주가 지났어요. 지난 2주를 돌아보는 짧은 검사예요. 1~2분이면 돼요.</p>
+          )}
+          <div className="row">
+            {(suggestPHQ ? ['PHQ9'] : dueAssessments).map((id) => (
+              <Link key={id} className="btn" to={`/assess/${id.toLowerCase()}`}>
+                {ASSESSMENTS.get(id)!.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {planned.length > 0 && (
+        <>
+          <h2>예정된 다가가기</h2>
+          {planned.map((a) => (
+            <div key={a.id} className="card">
+              <p style={{ marginBottom: 4 }}>{a.action}</p>
+              {a.scheduledFor && <p className="muted">{a.scheduledFor}</p>}
+              <Link className="btn" to={`/approach/${a.id}`}>
+                결과 기록하기
+              </Link>
+            </div>
+          ))}
+        </>
+      )}
+
+      <h2>오늘</h2>
+      <div className="card">
+        {loadError ? (
+          <p className="muted">기록을 불러오지 못했어요. 연습과 위기 안내는 그대로 쓸 수 있어요.</p>
+        ) : (
+          <>
+            <RoutineRow
+              label="아침 루틴"
+              done={status?.morningDone}
+              to="/routine/morning/0"
+              minTo="/routine/morningMin/0"
+            />
+            <RoutineRow label="저녁 기록" done={status?.eveningDone} to="/routine/evening/0" minTo="/routine/eveningMin/0" />
+            {status?.todayTask && (
+              <p style={{ marginTop: 12 }}>
+                <strong>다가갈 일:</strong> {status.todayTask.text}
+              </p>
+            )}
+            {todayAffirmation && (
+              <p>
+                <strong>오늘의 확언:</strong> “{fillValue(status!.affirmation!.weaker ? todayAffirmation.weaker : todayAffirmation.text)}”
+              </p>
+            )}
+            {doneToday > 0 && <p className="muted">오늘 연습 {doneToday}번. 잘하고 있어요.</p>}
+            {approached.length > 0 && (
+              <p>
+                <strong>다가간 일:</strong> {approached.join(', ')}
+              </p>
+            )}
+          </>
+        )}
+      </div>
+
+      <p className="muted" style={{ marginTop: 32 }}>
+        이 앱은 불안을 다루는 기술을 연습하는 보조 도구이며, 진단이나 전문 치료를 대신하지 않아요.
+      </p>
+    </div>
+  );
+}
+
+/** 루틴 한 줄: 했으면 ✓, 아니면 시작 버튼과 컨디션이 나쁜 날의 최소 버전. */
+function RoutineRow({ label, done, to, minTo }: { label: string; done?: boolean; to: string; minTo: string }) {
+  return (
+    <div className="row" style={{ alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+      <span>
+        {done ? '✓' : '○'} {label}
+      </span>
+      {done ? (
+        <span className="muted">했어요</span>
+      ) : (
+        <span className="row" style={{ alignItems: 'center' }}>
+          <Link className="btn-link" to={minTo} aria-label={`${label} 최소 버전 (1분)`}>
+            최소로
+          </Link>
+          <Link className="btn" to={to}>
+            시작
+          </Link>
+        </span>
+      )}
+    </div>
+  );
+}

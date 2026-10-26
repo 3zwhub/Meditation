@@ -1,0 +1,265 @@
+{
+  "id": "AC03",
+  "contentVersion": 1,
+  "name": "기꺼이 경험하기",
+  "summary": "불안을 밀어내지 않고 자리를 내준 채, 하고 싶은 일로 한 걸음 다가가요.",
+  "category": "act",
+  "mechanisms": [
+    "m3",
+    "m5"
+  ],
+  "states": {
+    "suitable": [
+      "C"
+    ],
+    "avoid": [
+      {
+        "when": "checkin.anxiety>=8",
+        "use": [
+          "BR01",
+          "GR01"
+        ],
+        "reason": "먼저 각성을 낮춘 뒤"
+      }
+    ]
+  },
+  "kind": "approach",
+  "evidence": {
+    "level": "preliminary",
+    "note": "불안을 억누르게 한 집단보다 받아들이게 한 집단이 불안을 일으키는 과제에서 회피가 적었다는 실험 연구들이 있어요(Eifert & Heffner, 2003; Campbell-Sills et al., 2006). ACT 전체의 근거는 중간 수준이에요(A-Tjak et al., 2015)."
+  },
+  "intro": [
+    "불안을 없애려고 애쓸수록 불안이 더 커지는 경험, 해본 적 있나요?",
+    "이 연습은 반대로 해봐요. 불안을 밀어내지 않고, 잠깐 자리를 내주는 거예요. 좋아서가 아니라, 내가 하고 싶은 일을 하기 위해서요."
+  ],
+  "preMeasure": {
+    "id": "anxiety",
+    "label": "지금 불안은 몇 점인가요?"
+  },
+  "postMeasure": {
+    "id": "willingness",
+    "label": "이 느낌이 그대로 있어도, 그 일을 해볼 마음은 몇 점인가요? (기꺼이 하는 정도)"
+  },
+  "variants": {
+    "minimal": {
+      "durationLabel": "1분",
+      "estimatedSec": 60,
+      "steps": [
+        {
+          "id": "task",
+          "type": "text",
+          "label": "지금 하려다 멈춘 일, 또는 피하고 싶은 일은 무엇인가요?",
+          "example": "친구에게 먼저 연락하기"
+        },
+        {
+          "id": "s1",
+          "type": "say",
+          "text": "숨을 한 번 내쉬어 보세요.",
+          "pauseSec": 3
+        },
+        {
+          "id": "s2",
+          "type": "say",
+          "text": "지금 불안이 몸 어디에 있는지 찾아보세요. 가슴, 배, 목, 어깨…",
+          "pauseSec": 5
+        },
+        {
+          "id": "s3",
+          "type": "say",
+          "text": "그 느낌에게 이렇게 말해 보세요."
+        },
+        {
+          "id": "s4",
+          "type": "say",
+          "text": "\"여기 있구나. 있어도 괜찮아. 너를 데리고 {task}을 해볼게.\"",
+          "pauseSec": 5
+        },
+        {
+          "id": "s5",
+          "type": "say",
+          "text": "불안이 줄지 않아도 괜찮아요. 불안과 함께, 가장 작은 첫걸음 하나만 떼어 보세요."
+        }
+      ]
+    },
+    "basic": {
+      "durationLabel": "2~3분",
+      "estimatedSec": 170,
+      "steps": [
+        {
+          "id": "task",
+          "type": "text",
+          "label": "지금 하려다 멈춘 일, 또는 피하고 싶은 일은 무엇인가요?",
+          "example": "친구에게 먼저 연락하기"
+        },
+        {
+          "id": "s1",
+          "type": "say",
+          "text": "편한 자세로 앉아, 숨을 한두 번 천천히 내쉬어 보세요.",
+          "pauseSec": 5
+        },
+        {
+          "id": "s2",
+          "type": "say",
+          "text": "지금 불안이 몸 어디에서 가장 강하게 느껴지나요? 그곳에 주의를 살짝 가져가 보세요.",
+          "pauseSec": 5
+        },
+        {
+          "id": "bodyParts",
+          "type": "choice",
+          "label": "가장 강하게 느껴지는 곳",
+          "lexicon": "bodyParts",
+          "multi": true
+        },
+        {
+          "id": "s3",
+          "type": "say",
+          "text": "그 느낌을 마치 처음 보는 물건처럼 관찰해 볼게요."
+        },
+        {
+          "id": "s4",
+          "type": "say",
+          "text": "크기가 있다면, 얼마나 클까요? 주먹만 한가요, 손바닥만 한가요?",
+          "pauseSec": 5
+        },
+        {
+          "id": "s5",
+          "type": "say",
+          "text": "모양이 있다면요? 둥근가요, 뾰족한가요, 퍼져 있나요?",
+          "pauseSec": 5
+        },
+        {
+          "id": "s6",
+          "type": "say",
+          "text": "온도는요? 뜨거운가요, 차가운가요?",
+          "pauseSec": 4
+        },
+        {
+          "id": "s7",
+          "type": "say",
+          "text": "움직이나요, 가만히 있나요?",
+          "pauseSec": 4
+        },
+        {
+          "id": "s8",
+          "type": "say",
+          "text": "무게가 있다면, 무거운가요, 가벼운가요?",
+          "pauseSec": 4
+        },
+        {
+          "id": "feeling",
+          "type": "text",
+          "label": "관찰한 느낌을 짧게 적어 보세요. (선택)",
+          "example": "가슴 가운데, 주먹만 함, 단단하고 뜨거움, 조금씩 조여 옴",
+          "optional": true
+        },
+        {
+          "id": "s9",
+          "type": "say",
+          "text": "숨을 들이쉴 때, 그 느낌 주변으로 숨이 흘러 들어간다고 상상해 보세요.",
+          "pauseSec": 4
+        },
+        {
+          "id": "s10",
+          "type": "say",
+          "text": "내쉴 때, 그 느낌 주위에 공간이 조금 넓어진다고 상상해 보세요.",
+          "pauseSec": 6
+        },
+        {
+          "id": "s11",
+          "type": "say",
+          "text": "느낌을 작게 만들려는 게 아니에요. 느낌이 있을 자리를 넓히는 거예요.",
+          "pauseSec": 3
+        },
+        {
+          "id": "s12",
+          "type": "say",
+          "text": "한 번 더. 들이쉬고… 내쉬며 공간을 넓히고…",
+          "pauseSec": 8
+        },
+        {
+          "id": "s13",
+          "type": "say",
+          "text": "이 느낌이 사라지지 않고 그대로 있다고 해도, {task}을 해볼 수 있을까요?"
+        },
+        {
+          "id": "why",
+          "type": "text",
+          "label": "이 일이 나에게 왜 중요한지 하나만 떠올려 보세요. (선택)",
+          "example": "그 친구와의 관계를 잃고 싶지 않아서.",
+          "optional": true,
+          "showMyValue": true
+        },
+        {
+          "id": "s14",
+          "type": "say",
+          "text": "10점이 아니어도 괜찮아요. 1점이라도 있다면 그만큼의 걸음을 뗄 수 있어요."
+        },
+        {
+          "id": "s15",
+          "type": "say",
+          "text": "이 느낌은 {bodyParts}에 있다. 이 느낌을 데리고, 나는 {task}을 한다.",
+          "pauseSec": 5
+        }
+      ]
+    }
+  },
+  "outro": {
+    "message": "불안 점수가 그대로여도 괜찮아요. 이 연습에서 중요한 건 불안 점수가 아니라 기꺼이 하는 정도예요.",
+    "reflection": {
+      "id": "r1",
+      "type": "text",
+      "label": "불안을 밀어낼 때와 자리를 내줄 때, 무엇이 달랐나요?",
+      "optional": true
+    },
+    "next": [
+      {
+        "if": "true",
+        "module": "DB03",
+        "variant": "minimal"
+      },
+      {
+        "if": "post.willingness>=2",
+        "module": "DB03",
+        "variant": "basic"
+      },
+      {
+        "if": "true",
+        "action": "returnToTask"
+      }
+    ]
+  },
+  "troubleshooting": [
+    {
+      "problem": "몸에서 불안을 찾을 수가 없어요",
+      "answer": "괜찮아요. 머릿속 생각으로만 느껴질 수도 있어요. 그럴 땐 4번(기꺼이 하기 질문)부터 시작하세요."
+    },
+    {
+      "problem": "느낌을 관찰하니 더 커져요",
+      "answer": "처음 똑바로 보면 잠깐 커질 수 있어요. 대개는 관찰을 이어가면 크기나 모양이 변해요. 7점을 넘으면 눈을 뜨고 GR01로 바꾸세요.",
+      "action": "GR01"
+    },
+    {
+      "problem": "받아들인다는 게 포기하는 것 같아요",
+      "answer": "받아들이는 건 '이대로 살겠다'가 아니라 '지금 이 느낌과 싸우느라 힘을 쓰지 않겠다'예요. 그 힘을 하고 싶은 일에 쓰는 거예요."
+    },
+    {
+      "problem": "불안을 받아들이면 불안이 사라질 거라고 기대하게 돼요",
+      "answer": "그 기대가 생기면 다시 '없애려는' 쪽으로 돌아간 거예요. 알아차렸다면 충분해요. 목표는 불안이 있어도 움직이는 거예요."
+    }
+  ],
+  "stopSignals": [
+    {
+      "text": "몸 감각에 집중하다 공황이 커지거나, 고통스러운 기억이 밀려와요",
+      "action": "GR01"
+    },
+    {
+      "text": "피하고 싶은 일이 아니라 \"모든 걸 끝내고 싶다\"는 느낌이에요",
+      "action": "crisis"
+    }
+  ],
+  "references": [
+    "eifert2003",
+    "campbellsills2006",
+    "atjak2015"
+  ]
+}

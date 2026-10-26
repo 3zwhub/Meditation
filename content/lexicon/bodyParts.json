@@ -1,0 +1,37 @@
+{
+  "id": "bodyParts",
+  "options": [
+    {
+      "value": "머리",
+      "label": "머리"
+    },
+    {
+      "value": "얼굴/턱",
+      "label": "얼굴/턱"
+    },
+    {
+      "value": "목/어깨",
+      "label": "목/어깨"
+    },
+    {
+      "value": "가슴",
+      "label": "가슴"
+    },
+    {
+      "value": "배",
+      "label": "배"
+    },
+    {
+      "value": "손",
+      "label": "손"
+    },
+    {
+      "value": "다리",
+      "label": "다리"
+    },
+    {
+      "value": "잘 모르겠음",
+      "label": "잘 모르겠음"
+    }
+  ]
+}
