@@ -62,12 +62,12 @@
 
 | # | 메커니즘 | 뇌과학적 설명 (정확한 버전) | 겨냥하는 기법 | 근거 수준 |
 |---|---|---|---|---|
-| ① | **과잉 경보·신체 긴장** | 불안장애에서 편도체·섬엽의 위협 반응이 높게 나타난다는 메타분석이 있습니다(Etkin & Wager, 2007). 자율신경계의 교감신경 활성(심박·호흡 증가)이 함께 나타납니다. 내쉬는 숨을 길게 하는 느린 호흡은 심박변이도를 높이고 각성을 낮추는 경향이 있습니다(Zaccaro et al., 2018 체계적 고찰). | 느린 호흡, 생리적 한숨(Balban et al., 2023), DBT TIPP, 그라운딩, 바디스캔 | 호흡: 중간 / TIPP 구성요소 개별: 예비~중간 / TIPP 묶음 자체: 예비 |
+| ① | **과잉 경보·신체 긴장** | 불안장애에서 편도체·섬엽의 위협 반응이 높게 나타난다는 메타분석이 있습니다(Etkin & Wager, 2007). 자율신경계의 교감신경 활성(심박·호흡 증가)이 함께 나타납니다. 내쉬는 숨을 길게 하는 느린 호흡은 심박변이도를 높이고 각성을 낮추는 경향이 있습니다(Zaccaro et al., 2018 체계적 고찰). | 느린 호흡, 생리적 한숨(Balban et al., 2023), DBT TIPP, 그라운딩, 바디스캔 | 느린 호흡: 중간 / 생리적 한숨: 매일 연습 효과 예비~중간, 즉시 효과 예비 / 그라운딩: 예비(임상에서 널리 쓰이나 단독 검증 적음) / TIPP 구성요소 개별: 예비~중간 / TIPP 묶음 자체: 예비 |
 | ② | **걱정·반추** | 자기 관련 생각과 마음 방황에 관여하는 DMN(Raichle et al., 2001)이 우울·불안에서 반추와 함께 과도하게 연결되어 있다는 연구가 있습니다(Hamilton et al., 2015). 숙련된 명상가에서 명상 중 DMN 활동이 낮았다는 연구가 있으나(Brewer et al., 2011), 소규모이고 인과 관계는 확립되지 않았습니다. | 마음챙김(생각 관찰), ACT 탈융합, 걱정 미루기(Borkovec et al., 1983), 감정 이름 붙이기 | 마음챙김의 불안 감소: 중간~강함(Hofmann et al., 2010; Hoge et al., 2023) / 걱정 미루기: 예비~중간 / DMN 기전 설명: 예비 |
 | ③ | **회피·안전행동** | 공포는 지워지기보다 새로운 "안전 학습"이 기존 공포 기억을 억제하는 방식으로 줄어듭니다(억제 학습, Craske et al., 2014). 전전두엽(특히 복내측)이 편도체 반응 조절에 관여합니다. 피하면 이 새 학습이 일어나지 않습니다. | CBT 행동실험·점진적 노출, DBT 반대 행동, ACT 기꺼이 경험하기·전념 행동 | 노출 기반 CBT의 불안 효과: 강함(Hofmann & Smits, 2008; Carpenter et al., 2018) / ACT: 중간(A-Tjak et al., 2015) |
 | ④ | **파국적 예측** | 불안할 때 위협의 확률과 심각성을 과대평가하고 대처 능력을 과소평가하는 경향(인지 편향). 불확실성을 견디기 어려워하는 성향이 걱정을 유지시킵니다(Dugas et al.의 불확실성 불내성 모델). | CBT 사고기록지(증거 검토), 행동실험(예측 검증), 불확실성 수용 연습 | CBT: 강함 |
 | ⑤ | **자기비판·2차 불안** | 위협 체계가 외부뿐 아니라 자기 자신을 향할 때 지속적인 긴장이 생긴다는 이론(Gilbert의 자비중심치료 모델). 자기자비가 높을수록 불안·우울이 낮다는 메타분석(MacBeth & Gumley, 2012). | 자비명상, 자기자비형 확언, DBT 지혜로운 마음, ACT 관찰하는 자기 | 상관 연구: 중간 / 개입 효과: 예비~중간 / 뇌 기전: 가설 |
-| ⑥ | **감정에 압도됨** | 감정에 말로 이름을 붙이면 편도체 반응이 줄고 우측 복외측 전전두엽 활동이 늘었다는 연구(Lieberman et al., 2007). 단, 실험실 연구이며 효과는 일시적입니다. | 감정 이름 붙이기, DBT STOP, 표현적 글쓰기(Pennebaker, 1997) | 이름 붙이기: 예비~중간 / 표현적 글쓰기: 중간(효과 작음, Frattaroli, 2006) |
+| ⑥ | **감정에 압도됨** | 감정에 말로 이름을 붙이면 편도체 반응이 줄고 우측 복외측 전전두엽 활동이 늘었다는 연구(Lieberman et al., 2007). 단, 실험실 연구이며 효과는 일시적입니다. | 감정 이름 붙이기, DBT STOP, 표현적 글쓰기(Pennebaker, 1997) | 이름 붙이기: 예비~중간(Lieberman et al., 2007; Kircanski et al., 2012) / STOP 단독: 예비 / 표현적 글쓰기: 중간(효과 작음, Frattaroli, 2006) |
 | ⑦ | **활동 위축 → 우울 (감시)** | 불안으로 피하는 일이 늘면 보상 경험이 줄고 기분이 떨어지는 악순환. | 행동활성화(Ekers et al., 2014), 가치 명료화, 좋았던 일 기록 | 행동활성화의 우울 효과: 강함 / 감사 기록: 중간(효과 작음, Davis et al., 2016) |
 
 ### 1.3 사용자에게 보여줄 쉬운 설명
@@ -127,19 +127,32 @@ CBT는 "생각이 맞는지 따져보자", ACT는 "생각과 싸우지 말고 �
    - 기운이 없고 아무것도 하기 싫다 → **E. 무기력(우울 신호)**
    - 비교적 괜찮다 → **F. 안정**
 3. 지금 쓸 수 있는 시간은? (1분 / 3분 / 5분 이상)
+4. (CB01 감정 이름 붙이기를 막 했다면 자동) 이 감정이 나에게 시키는 행동은? 피하기·숨기 → C 경로 / 계속 생각하기·확인하기 → B 경로 / 화내기 → D 경로의 STOP
 
 ### 상태별 경로
 
 | 상태 | 첫 개입 (1~3분) | 이어지는 개입 (3~7분) | 하지 말아야 할 것 |
 |---|---|---|---|
-| **A. 급성 불안** (불안 7점 이상, 신체 증상) | 생리적 한숨 `BR01` 또는 그라운딩 `GR01` (호흡이 불편하면 그라운딩 먼저) | 진정된 뒤: 감정 이름 붙이기 `CB01` → 지금 할 일 하나로 돌아가기 | 긴 사고기록, 원인 분석, 눈 감고 오래 몸 감각에 집중하기 |
+| **A. 급성 불안** (불안 7점 이상, 신체 증상) | 생리적 한숨 `BR01` 또는 그라운딩 `GR01` (개인 설정 "호흡보다 그라운딩 먼저"가 켜져 있으면 GR01) | 진정된 뒤: 감정 이름 붙이기 `CB01` → 지금 할 일 하나로 돌아가기 | 긴 사고기록, 원인 분석, 눈 감고 오래 몸 감각에 집중하기 |
 | **B. 걱정 루프** (불안 4~6점) | STOP `DB02` → 감정 이름 붙이기 `CB01` | 생각의 종류 판별 → 구체적 예측이면 간이 사고기록지 `CB02`, 답 없는 반복이면 탈융합 `AC01` 또는 걱정 미루기 `CB03` | 걱정의 답을 찾을 때까지 계속 생각하기, 인터넷 검색·안심 구하기 반복 |
-| **C. 회피 직전** | 느린 호흡 `BR02` (1분) | 기꺼이 경험하기 `AC03` → 반대 행동 `DB03`: "가장 작은 첫걸음" 하나 정하고 실행 | 불안이 0이 될 때까지 기다렸다가 시작하기 |
+| **C. 회피 직전** | 느린 호흡 `BR02` (1분) | 기꺼이 경험하기 `AC03` → 반대 행동 `DB03`을 **하나의 "다가가기" 흐름**으로: "가장 작은 첫걸음" 하나 정하고 실행. DB03 사실 확인에서 불안이 사실에 맞으면(실제 위험) 반대 행동 대신 CB02의 대처 칸으로 (2차: 문제 해결 모듈) | 불안이 0이 될 때까지 기다렸다가 시작하기 |
 | **D. 감정 폭주** | DBT TIPP `DB01` (찬물로 얼굴 적시기 또는 제자리 빠른 움직임 30초~1분) | STOP `DB02` → 지혜로운 마음 `DB05` 질문 하나 | 그 상태에서 중요한 결정·메시지 보내기 |
-| **E. 무기력** (우울 신호) | 바디스캔 짧은 버전 `MD01` 또는 1분 몸 움직이기 | 행동활성화 `CB05`: 5분 안에 할 수 있는 작은 활동 하나 | "기분이 나아지면 하자"며 기다리기. **2주 이상 계속되면 6장 기준 확인** |
+| **E. 무기력** (우울 신호) | 바디스캔 짧은 버전 `MD01` 또는 1분 몸 움직이기. **에너지 0~2점이면** MD01을 건너뛰고 CB05의 "아주 작은" 활동으로 바로 (바디스캔이 졸음으로 이어질 수 있음) | 행동활성화 `CB05`: 5분 안에 할 수 있는 작은 활동 하나 | "기분이 나아지면 하자"며 기다리기. **2주 이상 계속되면 6장 기준 확인** |
 | **F. 안정** | 오늘의 루틴 모듈 | 생각 관찰 `MD02` (2차 이후: 자비명상 `MD03`, 주간이면 가치 나침반 `AC02`) | — (안정된 날이 연습하기 가장 좋은 날임을 안내) |
 
 **모든 경로 공통 마무리**: 불안 점수 다시 기록 → "지금 하고 싶은 일, 해야 할 일로 돌아갈 준비가 됐나요?"
+
+### 개인 설정이 바꾸는 경로
+모듈을 쓰면서 생기는 개인 설정은 한곳에 모아 저장하고, 라우팅이 이를 따릅니다.
+
+| 설정 | 정해지는 곳 | 라우팅에 미치는 영향 |
+|---|---|---|
+| 호흡보다 그라운딩 먼저 | BR01·BR02의 "숨에 집중하니 더 불안해요" 선택, 또는 설정 화면 | A 상태 첫 개입을 GR01로 / MD02 닻을 소리로 기본 설정 |
+| TIPP 안전 확인 결과 | DB01 처음 사용 시 | 해당 항목이 있으면 DB01을 호흡·근육 이완만으로 안내 |
+| 명상 닻(호흡/소리) | MD02 시작 화면 | MD02 안내 문구 |
+| MD01 추천 끄기 | MD01의 "몸에 집중하니 불안해요" 선택 | E·F 상태와 루틴에서 MD01 대신 GR01·CB05 추천 |
+| 걱정 시간 시각 | CB03 처음 사용 시 | 저녁 루틴에서 걱정 시간 → JR01 순서로 자동 연결 |
+| 확언 끄기 | AF01 설정 | 아침 루틴과 모듈 마무리에서 확언 생략 |
 
 ---
 
@@ -154,7 +167,7 @@ CBT는 "생각이 맞는지 따져보자", ACT는 "생각과 싸우지 말고 �
 | **저녁** | 오늘 불안 점수 + 한 줄 기록 | 저녁 3줄 기록 `JR01` (불안했던 순간 / 그때 한 것 / 다가간 일·좋았던 일) | 간이 사고기록지 또는 표현적 글쓰기(주 1회 이하) |
 | **주간** (주말 10분) | 이번 주 점수 그래프 보기 | 주간 리뷰: 효과 있던 모듈, 다가간 일·피한 일 / 다음 주 작은 노출 목표 1개 | 가치 나침반 `AC02`, 행동실험 계획 `CB04` |
 
-**걱정 시간**: 걱정 미루기 `CB03`를 쓰는 경우, 저녁 기록 직전 5분을 "걱정 시간"으로 둡니다. 잠자리 직전은 피합니다.
+**걱정 시간**: 걱정 미루기 `CB03`를 쓰는 경우, 저녁 기록 직전 5분을 "걱정 시간"으로 둡니다. 잠자리 직전(최소 1시간 전 이후)은 피합니다. 알림이 없는 MVP에서는 저녁 기록을 열면 걱정 시간이 먼저 이어지는 방식으로 연결합니다. 걱정 메모는 걱정이 올 때 몇 초 안에 열려야 하므로 홈 화면에 고정 버튼으로 둡니다.
 
 ### 다시 시작하기 규칙
 - 연속 기록(스트릭)을 보여주지 않습니다. 대신 **"이번 주 연습한 날 수"**를 보여줍니다. 끊김이 실패로 보이지 않게 하기 위해서입니다.
@@ -171,7 +184,7 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 ### 호흡·그라운딩
 | ID | 이름 | 목적 | 메커니즘 | 출처 | 시간 | 진행 요약 | 효과 확인 | MVP |
 |---|---|---|---|---|---|---|---|---|
-| BR01 | 생리적 한숨 | 빠른 각성 낮추기 | ① | 호흡 연구(Balban et al., 2023) | 1~3분 | 코로 들이쉬고, 짧게 한 번 더 들이쉰 뒤, 입으로 길게 내쉬기. 3~10회 | 전후 불안 점수 | ✅ |
+| BR01 | 생리적 한숨 | 긴장을 낮추는 호흡 연습 (즉시 효과는 예비 근거) | ① | 호흡 연구(Balban et al., 2023) | 1~3분 | 코로 들이쉬고, 짧게 한 번 더 들이쉰 뒤, 입으로 길게 내쉬기. 3~10회 | 전후 불안 점수 | ✅ |
 | BR02 | 느린 호흡 | 몸의 긴장 낮추기 | ① | 공명 호흡(Zaccaro et al., 2018) | 1~5분 | 4초 들이쉬고 6초 내쉬기(분당 약 6회). 화면의 원이 커지고 작아지는 데 맞춰 | 전후 불안 점수 | ✅ |
 | GR01 | 5-4-3-2-1 그라운딩 | 주의를 바깥으로 돌려 현재로 돌아오기 | ①⑥ | 불안 관리 기법(일반적 임상 기법) | 1~2분 | 보이는 것 5, 들리는 것 4, 닿는 것 3, 냄새 2, 맛 1을 찾아 마음속으로 말하기 | 전후 불안 점수 | ✅ |
 
@@ -188,7 +201,7 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 | CB01 | 감정 이름 붙이기 | 감정에 압도되지 않기 | ⑥ | 정서 명명(Lieberman et al., 2007) | 1분 | 감정 단어 목록에서 고르고 강도 표시. "나는 지금 ___을 느끼고 있다" | 전후 강도 | ✅ |
 | CB02 | 간이 사고기록지 | 파국적 예측 검토 | ④ | CBT 사고기록(Beck) | 3~5분 | 상황 → 자동적 생각과 믿는 정도 → 근거와 반대 근거 → 균형 잡힌 생각 → 믿는 정도 다시 | 믿는 정도 변화, 불안 점수 | ✅ |
 | CB03 | 걱정 미루기 | 걱정 루프 끊기 | ② | 자극 통제(Borkovec et al., 1983) | 1분 + 걱정 시간 5분 | 걱정이 오면 메모하고 "걱정 시간에 다루자". 걱정 시간에 목록을 보며 해결 가능한 것만 행동 계획 | 하루 걱정 시간(자가 추정), 저녁 목록 중 여전히 중요한 비율 | ✅ |
-| CB04 | 행동실험 | 예측이 맞는지 직접 확인 | ③④ | CBT 행동실험 | 계획 3분 + 실행 + 기록 2분 | 예측과 확신도 적기 → 작은 실험 실행 → 실제 결과와 비교 | 예측과 결과의 차이 | — (주간 기능, 2차) |
+| CB04 | 행동실험 | 예측이 맞는지 계획적으로 반복 확인 | ③④ | CBT 행동실험 | 계획 3분 + 실행 + 기록 2분 | **DB03 반대 행동의 확장.** DB03 기본 버전에 이미 "예상 적기 → 실행 → 실제 결과 비교"가 들어 있으므로, CB04는 같은 예측을 여러 상황에서 반복 검증하고 예상 확신도의 변화를 추적하는 주간 기능으로 둠 | 예상 확신도의 변화 | — (주간 기능, 2차) |
 | CB05 | 작은 행동 하나 | 무기력할 때 활동 다시 시작 | ⑦ | 행동활성화(Ekers et al., 2014) | 1~5분 | 즐거움 또는 성취감을 줄 5분짜리 활동 하나 고르고 지금 하기 | 활동 전후 기분, 즐거움·성취 0~10 | ✅ |
 
 ### ACT
@@ -230,14 +243,25 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 
 ## 5. 측정과 피드백 루프
 
+### 0~10 점수 기준 (모든 점수에 공통)
+| 점수 | 의미 |
+|---|---|
+| 0 | 전혀 없음 |
+| 3 | 약간 있지만 하던 일을 할 수 있음 |
+| 5 | 꽤 신경 쓰이고 집중이 어려움 |
+| 7 | 강해서 다른 것을 하기 어려움 → 2장 라우팅에서 "몸 먼저" 기준 |
+| 10 | 상상할 수 있는 가장 강한 정도 |
+
 ### 매일 (30초)
 | 항목 | 방식 | 이유 |
 |---|---|---|
 | 불안·긴장 | 0~10 | 주 지표 |
 | 기분 | 0~10 | 우울 신호 감시 |
 | 에너지 | 0~10 | 무기력 감시 |
-| 다가간 일 / 피한 일 | 저녁 3줄 기록에서 체크 | **회피가 줄고 다가감이 늘었는가**가 불안 점수보다 더 중요한 장기 지표 |
+| 다가간 일 / 피한 일 | DB03 완료(첫걸음 "했어요"와 중간에 멈춘 시도 포함)는 **자동으로 "다가간 일"로 기록**, 저녁 3줄 기록에서는 확인·추가와 피한 일 체크만 | **회피가 줄고 다가감이 늘었는가**가 불안 점수보다 더 중요한 장기 지표 |
 | 모듈 수행 | 자동 기록 (모듈 ID, 시작·종료, 전후 점수) | 모듈별 효과 분석 |
+| 확언 믿는 정도 | AF01에서 자동 기록 (형태별 0~10) | 나에게 맞는 확언 형태 찾기. 자기자비형 믿는 정도의 변화는 메커니즘 ⑤(자기비판)의 간접 지표 |
+| 하루 대표 기분 점수 | 저녁 기록 점수, 없으면 그날 체크인 중 가장 낮은 기분 점수 | 6.2 위기 기준("기분 2점 이하 3일 연속")과 주간 추이의 기준값 |
 
 ### 주기적 척도
 | 척도 | 주기 | 해석 구간 (참고용, 진단 아님) |
@@ -252,6 +276,7 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 |---|---|
 | 어떤 모듈을 5회 이상 썼는데 평균 전후 변화가 1점 미만 | 같은 상태의 다른 모듈을 추천 1순위로 올림. 단, 노출·행동 모듈은 즉각 변화가 작을 수 있으므로 이 규칙에서 제외하고 다가간 일 수로 판단 |
 | 2주간 다가간 일이 0~1개 | 다음 주 노출 목표를 더 작게 나눔("가장 작은 첫걸음"을 반으로) |
+| 비슷한 자동적 생각을 CB02로 3회 이상 기록 | 기록이 안심 구하기가 되고 있을 수 있으므로 CB02 대신 AC01 탈융합 또는 DB03 반대 행동(직접 확인) 추천. MVP에서는 "이전에 기록한 생각" 목록에서 같은 것을 고르는 방식으로 판별 |
 | 진정 모듈(BR, GR, DB01)만 80% 이상 사용 | "진정 기법이 안전행동이 되고 있지 않은지" 안내하고, 기꺼이 경험하기·반대 행동을 함께 제안 |
 | 2주간 GAD-7이 줄지 않음 | 5단계 점검에서 루틴 재설계. 4주간 변화 없으면 전문가 상담 권유 |
 | 기분·에너지 점수가 2주 이상 4점 이하 | 무기력 경로(E)를 루틴에 추가하고, PHQ-9 즉시 실시 제안 |
@@ -269,7 +294,8 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 |---|---|
 | PHQ-9 9번 문항(죽음이나 자해에 대한 생각)에 1점 이상 | 결과 화면보다 먼저 위기 안내 화면 표시. "지금 안전한가요?" 질문 → 안전하지 않다면 109·119 바로 걸기 버튼 |
 | 사용자가 직접 "위기" 버튼을 누름 (모든 화면에 상시 노출) | 위기 안내 화면 |
-| 기분 점수 2점 이하가 3일 연속 | 부드러운 확인 메시지와 상담 연락처 안내 |
+| 하루 대표 기분 점수(5장) 2점 이하가 3일 연속 | 부드러운 확인 메시지와 상담 연락처 안내 |
+| 저녁 기록·CB05에서 기분 0~2점 입력 | 그 화면에서 "위기" 버튼을 강조 표시 |
 
 **위기 안내 화면 내용** (네트워크 없이도 표시)
 - 자살예방상담전화 **109** (24시간)
@@ -318,13 +344,16 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 6. **안전**: 상시 위기 버튼, PHQ-9 9번 연동, 오프라인 위기 안내, TIPP 주의 확인
 7. **간단한 주간 화면**: 이번 주 연습한 날, 불안 평균 추이, 모듈별 평균 전후 변화, 다가간 일 수
 8. **데이터**: 기기 안에만 저장, 내보내기(JSON/CSV)·가져오기·전체 삭제
+9. **내 가치**: AF01 가치 확언 쓰기에서 저장하고 AC03·DB03·AF01 가치형에서 다시 씀 (2차 AC02 가치 나침반의 시작점)
+10. **개인 설정**: 2장 "개인 설정이 바꾸는 경로"의 6개 항목
+11. **빠른 진입**: 홈 화면에서 2번 탭 안에 최소 버전 모듈 시작, 걱정 메모 고정 버튼
 
 ### 7.3 나중에 (2차 이후)
-- 모듈: MD03 자비명상, CB04 행동실험, AC02 가치 나침반, DB04 체인 분석, DB05 지혜로운 마음, JR02 표현적 글쓰기
+- 모듈: MD03 자비명상, CB04 행동실험(DB03의 확장), AC02 가치 나침반, DB04 체인 분석, DB05 지혜로운 마음, JR02 표현적 글쓰기, **문제 해결**(불안이 사실에 맞을 때, DBT·CBT 문제 해결)
 - 음성 가이드(녹음 또는 음성 합성)
 - 루틴 리마인더 알림
 - 개인화 추천(5장 조정 규칙의 자동화)
-- 단계적 노출 사다리(불안 위계 만들기와 진행 추적)
+- 노출 사다리 저장·진행 추적 (사다리 만들기 자체는 MVP의 DB03 기본 버전에 포함)
 - 앱 잠금(PIN)
 
 ### 7.4 다음 단계 프롬프트
@@ -334,7 +363,7 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
    - 3회차: DB01, MD01, MD02, CB05, JR01, AF01 (나머지 + 저널링·확언)
 2. **3단계** (`prompts/03-data-structure.md`): 구현 환경 = PWA, 나 혼자 사용, 기기 안에만 저장
 3. **4단계** (`prompts/04-implementation.md`): 이 저장소에서 구현
-4. **5단계** (`prompts/05-review-and-improve.md`): 2주 사용 후 첫 점검. 0장의 가정(불안 유형, 명상 경험) 확인
+4. **5단계** (`prompts/05-review-and-improve.md`): 2주 사용 후 첫 점검. 0장의 가정(불안 유형, 명상 경험) 확인. DB01의 강한 움직임(MVP는 1분)이 효과가 작다면 시간을 늘리는 것도 검토
 
 ---
 
@@ -345,23 +374,30 @@ ID 체계: `BR` 호흡 · `GR` 그라운딩 · `MD` 명상 · `CB` CBT · `AC` A
 - Borkovec, T. D. et al. (1983). Stimulus control applications to the treatment of worry. *Behaviour Research and Therapy*.
 - Brewer, J. A. et al. (2011). Meditation experience is associated with differences in default mode network activity and connectivity. *PNAS*.
 - Britton, W. B. et al. (2021). Defining and measuring meditation-related adverse effects in mindfulness-based programs. *Clinical Psychological Science*.
+- Campbell-Sills, L. et al. (2006). Effects of suppression and acceptance on emotional responses of individuals with anxiety and mood disorders. *Behaviour Research and Therapy*.
 - Carpenter, J. K. et al. (2018). Cognitive behavioral therapy for anxiety and related disorders: A meta-analysis of randomized placebo-controlled trials. *Depression and Anxiety*.
 - Cohen, G. L., & Sherman, D. K. (2014). The psychology of change: Self-affirmation and social psychological intervention. *Annual Review of Psychology*.
 - Craske, M. G. et al. (2014). Maximizing exposure therapy: An inhibitory learning approach. *Behaviour Research and Therapy*.
 - Davis, D. E. et al. (2016). Thankful for the little things: A meta-analysis of gratitude interventions. *Journal of Counseling Psychology*.
+- Dimidjian, S. et al. (2006). Randomized trial of behavioral activation, cognitive therapy, and antidepressant medication in the acute treatment of adults with major depression. *Journal of Consulting and Clinical Psychology*.
+- Eifert, G. H., & Heffner, M. (2003). The effects of acceptance versus control contexts on avoidance of panic-related symptoms. *Journal of Behavior Therapy and Experimental Psychiatry*.
 - Ekers, D. et al. (2014). Behavioural activation for depression; an update of meta-analysis of effectiveness and sub group analysis. *PLoS ONE*.
 - Etkin, A., & Wager, T. D. (2007). Functional neuroimaging of anxiety: A meta-analysis of emotional processing in PTSD, social anxiety disorder, and specific phobia. *American Journal of Psychiatry*.
 - Frattaroli, J. (2006). Experimental disclosure and its moderators: A meta-analysis. *Psychological Bulletin*.
 - Hamilton, J. P. et al. (2015). Depressive rumination, the default-mode network, and the dark matter of clinical neuroscience. *Biological Psychiatry*.
 - Heide, F. J., & Borkovec, T. D. (1983). Relaxation-induced anxiety: Paradoxical anxiety enhancement due to relaxation training. *Journal of Consulting and Clinical Psychology*.
-- Hofmann, S. G., & Smits, J. A. J. (2008). Cognitive-behavioral therapy for adult anxiety disorders: A meta-analysis of randomized placebo-controlled trials. *Journal of Clinical Psychiatry*.
 - Hofmann, S. G. et al. (2010). The effect of mindfulness-based therapy on anxiety and depression: A meta-analytic review. *Journal of Consulting and Clinical Psychology*.
+- Hofmann, S. G., & Smits, J. A. J. (2008). Cognitive-behavioral therapy for adult anxiety disorders: A meta-analysis of randomized placebo-controlled trials. *Journal of Clinical Psychiatry*.
 - Hoge, E. A. et al. (2023). Mindfulness-based stress reduction vs escitalopram for the treatment of adults with anxiety disorders: A randomized clinical trial. *JAMA Psychiatry*.
+- Kircanski, K., Lieberman, M. D., & Craske, M. G. (2012). Feelings into words: Contributions of language to exposure therapy. *Psychological Science*.
 - Kroenke, K. et al. (2001). The PHQ-9: Validity of a brief depression severity measure. *Journal of General Internal Medicine*.
+- Levin, M. E. et al. (2012). The impact of treatment components suggested by the psychological flexibility model: A meta-analysis of laboratory-based component studies. *Behavior Therapy*.
 - Lieberman, M. D. et al. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. *Psychological Science*.
 - Lindahl, J. R. et al. (2017). The varieties of contemplative experience. *PLoS ONE*.
 - Linehan, M. M. (2015). *DBT Skills Training Manual* (2nd ed.). Guilford Press.
 - MacBeth, A., & Gumley, A. (2012). Exploring compassion: A meta-analysis of the association between self-compassion and psychopathology. *Clinical Psychology Review*.
+- Masuda, A. et al. (2004). Cognitive defusion and self-relevant negative thoughts: Examining the impact of a ninety year old technique. *Behaviour Research and Therapy*.
+- McGowan, S. K., & Behar, E. (2013). A preliminary investigation of stimulus control training for worry: Effects on anxiety and insomnia. *Behavior Modification*.
 - Pennebaker, J. W. (1997). Writing about emotional experiences as a therapeutic process. *Psychological Science*.
 - Raichle, M. E. et al. (2001). A default mode of brain function. *PNAS*.
 - Salkovskis, P. M. (1991). The importance of behaviour in the maintenance of anxiety and panic: A cognitive account. *Behavioural Psychotherapy*.
