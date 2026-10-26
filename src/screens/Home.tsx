@@ -1,7 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AFFIRMATIONS, catalog, getModule } from '../content/load';
-import { getMeta, getSettings, latestValue, plannedApproachAttempts, recentHistory, setMeta, todayActivity, todayStatus } from '../db/repo';
+import { AFFIRMATIONS, ASSESSMENTS, assessmentReady, catalog, getModule } from '../content/load';
+import {
+  dailyLowMoodOrEnergy,
+  getMeta,
+  getSettings,
+  latestValue,
+  listAssessments,
+  plannedApproachAttempts,
+  recentHistory,
+  setMeta,
+  todayActivity,
+  todayStatus,
+} from '../db/repo';
+import { assessmentDue, persistentLowMood } from '../domain/assessments';
 import { localDate } from '../domain/day';
 import { fillAffirmation } from '../domain/affirmations';
 import { quickStartPicks } from '../domain/recommend';
@@ -19,6 +31,9 @@ export function Home() {
   const [planned, setPlanned] = useState<ApproachAttempt[]>([]);
   const [status, setStatus] = useState<Awaited<ReturnType<typeof todayStatus>> | null>(null);
   const [myValue, setMyValue] = useState<string | undefined>();
+  // 척도 실시 안내 (설계 4.1): 문항이 준비된 척도만
+  const [dueAssessments, setDueAssessments] = useState<string[]>([]);
+  const [suggestPHQ, setSuggestPHQ] = useState(false);
   const [lowMood, setLowMood] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
@@ -35,6 +50,13 @@ export function Home() {
         setPlanned(await plannedApproachAttempts());
         setStatus(await todayStatus(now));
         setMyValue((await latestValue())?.label);
+        const ready = [...ASSESSMENTS.values()].filter(assessmentReady);
+        const due: string[] = [];
+        for (const a of ready) if (assessmentDue((await listAssessments(a.id))[0], today)) due.push(a.id);
+        setDueAssessments(due);
+        setSuggestPHQ(
+          ready.some((a) => a.id === 'PHQ9') && !due.includes('PHQ9') && persistentLowMood(await dailyLowMoodOrEnergy(now), today),
+        );
         const notice = evaluateSafety({
           now,
           journals: h.journals,
@@ -99,6 +121,23 @@ export function Home() {
       <Link to="/worry" className="btn btn-block" style={{ marginTop: 12 }}>
         + 걱정 메모
       </Link>
+
+      {(dueAssessments.length > 0 || suggestPHQ) && (
+        <div className="card banner">
+          {suggestPHQ ? (
+            <p>2주 넘게 기분이나 에너지가 많이 낮았어요. 지금 상태를 돌아보는 짧은 검사를 해볼 수 있어요.</p>
+          ) : (
+            <p>2주가 지났어요. 지난 2주를 돌아보는 짧은 검사예요. 1~2분이면 돼요.</p>
+          )}
+          <div className="row">
+            {(suggestPHQ ? ['PHQ9'] : dueAssessments).map((id) => (
+              <Link key={id} className="btn" to={`/assess/${id.toLowerCase()}`}>
+                {ASSESSMENTS.get(id)!.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {planned.length > 0 && (
         <>

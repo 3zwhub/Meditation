@@ -1,0 +1,50 @@
+{
+  "id": "PHQ9",
+  "name": "PHQ-9",
+  "fullName": "우울 척도 (Patient Health Questionnaire-9)",
+  "itemCount": 9,
+  "safetyItem": 9,
+  "TODO": "TODO(content): 공식 한국어판(PHQ Screeners 배포 'PHQ-9 Korean for Korea')의 지시문·문항·응답 선택지를 글자 그대로 옮기고 source를 채운다. 직접 번역하지 않는다 (설계 4.1).",
+  "source": null,
+  "instruction": null,
+  "options": null,
+  "items": null,
+  "reference": "Kroenke, K. et al. (2001). The PHQ-9: Validity of a brief depression severity measure. Journal of General Internal Medicine.",
+  "bands": [
+    {
+      "min": 0,
+      "max": 4,
+      "label": "최소",
+      "message": "지난 2주 동안 우울 증상이 거의 없었어요.",
+      "recommend": "none"
+    },
+    {
+      "min": 5,
+      "max": 9,
+      "label": "가벼움",
+      "message": "가벼운 우울 증상이 있었어요. 지금처럼 연습을 이어가 보세요.",
+      "recommend": "none"
+    },
+    {
+      "min": 10,
+      "max": 14,
+      "label": "중간",
+      "message": "중간 정도의 우울 증상이 있었어요. 이 앱과 함께 전문가에게 한 번 평가를 받아 보면 도움이 될 수 있어요.",
+      "recommend": "suggest"
+    },
+    {
+      "min": 15,
+      "max": 19,
+      "label": "중간~심함",
+      "message": "우울 증상이 꽤 심한 편이었어요. 전문가의 도움을 받아 보길 권해요.",
+      "recommend": "strong"
+    },
+    {
+      "min": 20,
+      "max": 27,
+      "label": "심함",
+      "message": "우울 증상이 심한 편이었어요. 전문가의 도움을 받아 보길 권해요.",
+      "recommend": "strong"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { MODULES } from '../content/load';
+import { Link } from 'react-router-dom';
+import { ASSESSMENTS, MODULES, assessmentReady } from '../content/load';
 import type { VariantKey } from '../domain/types';
 import type { PlayerContext } from '../player/ModulePlayer';
 
@@ -40,6 +41,16 @@ export function Modules() {
           </div>
         </div>
       ))}
+      <h2>점수로 돌아보기</h2>
+      <p className="muted">지난 2주를 돌아보는 짧은 검사예요. 진단이 아니라 참고 자료예요.</p>
+      <div className="row">
+        {[...ASSESSMENTS.values()].map((a) => (
+          <Link key={a.id} className="btn" to={`/assess/${a.id.toLowerCase()}`}>
+            {a.name}
+            {!assessmentReady(a) && ' (준비 중)'}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

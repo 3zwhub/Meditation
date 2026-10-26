@@ -1,10 +1,21 @@
 import type { CatalogEntry } from '../domain/recommend';
-import { affirmationSchema, lexiconSchema, moduleSchema, type Affirmation, type Lexicon, type ModuleContent, type Step } from './schema';
+import {
+  affirmationSchema,
+  assessmentSchema,
+  lexiconSchema,
+  moduleSchema,
+  type Affirmation,
+  type AssessmentContent,
+  type Lexicon,
+  type ModuleContent,
+  type Step,
+} from './schema';
 
 // content/ 아래 JSON을 빌드에 포함한다 (서비스 워커가 함께 캐시).
 const rawModules = import.meta.glob('../../content/modules/*.json', { eager: true, import: 'default' });
 const rawLexicons = import.meta.glob('../../content/lexicon/*.json', { eager: true, import: 'default' });
 const rawAffirmations = import.meta.glob('../../content/affirmations.json', { eager: true, import: 'default' });
+const rawAssessments = import.meta.glob('../../content/assessments/*.json', { eager: true, import: 'default' });
 
 function parseAll<T>(raw: Record<string, unknown>, parse: (d: unknown) => { success: true; data: T } | { success: false; error: { issues: unknown } }): T[] {
   return Object.entries(raw).flatMap(([path, data]) => {
@@ -66,3 +77,10 @@ export function catalog(): CatalogEntry[] {
     }),
   }));
 }
+
+export const ASSESSMENTS = new Map<string, AssessmentContent>(
+  parseAll(rawAssessments, (d) => assessmentSchema.safeParse(d)).map((a) => [a.id, a]),
+);
+
+/** 공식 한국어판 문항이 들어 있어 실시할 수 있는지. */
+export const assessmentReady = (a: AssessmentContent | undefined) => Boolean(a?.items && a.options && a.instruction && a.source);

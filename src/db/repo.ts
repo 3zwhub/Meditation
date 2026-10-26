@@ -5,6 +5,7 @@ import {
   DEFAULT_SETTINGS,
   type ApproachAttempt,
   type ApproachTask,
+  type Assessment,
   type Thought,
   type ValueRecord,
   type Checkin,
@@ -72,10 +73,10 @@ export async function getRecommendation(id: string) {
 }
 
 /** 위기 화면이 열린 기록. 열린 이유 외의 내용은 저장하지 않는다 (설계 5.3). 실패해도 위기 화면은 열린다. */
-export async function logCrisisEvent(trigger: CrisisEvent['trigger'], now = new Date()) {
+export async function logCrisisEvent(trigger: CrisisEvent['trigger'], now = new Date(), safeAnswer?: CrisisEvent['safeAnswer']) {
   try {
     const { dayBoundaryHour } = await getSettings();
-    await getDB().crisisEvents.add({ id: newId(), ...stamp(now, dayBoundaryHour), trigger });
+    await getDB().crisisEvents.add({ id: newId(), ...stamp(now, dayBoundaryHour), trigger, ...(safeAnswer ? { safeAnswer } : {}) });
   } catch {
     // 기록 실패가 위기 안내를 막으면 안 된다
   }
@@ -338,4 +339,38 @@ export async function todayStatus(now = new Date()) {
     affirmation: aff?.affirmationId ? { id: aff.affirmationId, weaker: Boolean(aff.usedWeaker) } : undefined,
     todayTask: await getTodayTask(now),
   };
+}
+
+// ---- 척도 (GAD-7·PHQ-9, 작업 10) ----
+
+export async function addAssessment(data: Omit<Assessment, 'id' | 'createdAt' | 'localDate' | 'timeOfDay'>, now = new Date()) {
+  const { dayBoundaryHour } = await getSettings();
+  const a: Assessment = { id: newId(), ...stamp(now, dayBoundaryHour), ...data };
+  await getDB().assessments.add(a);
+  return a;
+}
+
+export async function listAssessments(instrument: Assessment['instrument']): Promise<Assessment[]> {
+  return (await getDB().assessments.where('instrument').equals(instrument).toArray()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+/** 날짜별로 기분 또는 에너지의 대표 점수가 4점 이하였는지 (최근 days일, PHQ-9 제안용). */
+export async function dailyLowMoodOrEnergy(now = new Date(), days = 14): Promise<Map<string, boolean>> {
+  const day = await today(now);
+  const since = addDays(day, -(days - 1));
+  const db = getDB();
+  const [journals, checkins] = await Promise.all([
+    db.journalEntries.where('localDate').aboveOrEqual(since).toArray(),
+    db.checkins.where('localDate').aboveOrEqual(since).toArray(),
+  ]);
+  const out = new Map<string, boolean>();
+  for (let i = 0; i < days; i++) {
+    const d = addDays(day, -i);
+    const j = journals.filter((x) => x.localDate === d).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+    const cs = checkins.filter((x) => x.localDate === d);
+    const mood = j?.mood ?? (cs.length ? Math.min(...cs.map((c) => c.mood)) : undefined);
+    const energy = j?.energy ?? (cs.length ? Math.min(...cs.map((c) => c.energy)) : undefined);
+    if (mood !== undefined || energy !== undefined) out.set(d, (mood ?? 10) <= 4 || (energy ?? 10) <= 4);
+  }
+  return out;
 }

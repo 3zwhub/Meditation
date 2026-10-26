@@ -126,3 +126,26 @@ export const affirmationSchema = z.object({
 
 export type Lexicon = z.infer<typeof lexiconSchema>;
 export type Affirmation = z.infer<typeof affirmationSchema>;
+
+// GAD-7·PHQ-9 (설계 4장). 문항·지시문·선택지는 공식 한국어판을 글자 그대로 옮긴다. 비어 있으면 화면은 "준비 중"을 보여준다.
+export const assessmentSchema = z
+  .object({
+    id: z.enum(['GAD7', 'PHQ9']),
+    name: z.string(),
+    fullName: z.string(),
+    itemCount: z.number().int().positive(),
+    safetyItem: z.number().int().positive().optional(),
+    TODO: z.string().optional(),
+    source: z.object({ title: z.string(), url: z.string(), retrievedAt: z.string() }).nullable(),
+    instruction: z.string().nullable(),
+    options: z.array(z.string()).length(4).nullable(),
+    items: z.array(z.string().min(1)).nullable(),
+    reference: z.string(),
+    bands: z
+      .array(z.object({ min: z.number(), max: z.number(), label: z.string(), message: z.string(), recommend: z.enum(['none', 'suggest', 'strong']) }))
+      .min(1),
+  })
+  .refine((a) => !a.items || a.items.length === a.itemCount, '문항 수가 itemCount와 달라요')
+  .refine((a) => !a.items || (a.source && a.instruction && a.options), '문항이 있으면 출처·지시문·선택지도 있어야 해요');
+
+export type AssessmentContent = z.infer<typeof assessmentSchema>;

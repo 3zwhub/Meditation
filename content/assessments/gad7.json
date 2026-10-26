@@ -1,0 +1,42 @@
+{
+  "id": "GAD7",
+  "name": "GAD-7",
+  "fullName": "범불안장애 척도 (Generalized Anxiety Disorder-7)",
+  "itemCount": 7,
+  "TODO": "TODO(content): 공식 한국어판(PHQ Screeners 배포 'GAD-7 Korean for Korea')의 지시문·문항·응답 선택지를 글자 그대로 옮기고 source를 채운다. 직접 번역하지 않는다 (설계 4.1).",
+  "source": null,
+  "instruction": null,
+  "options": null,
+  "items": null,
+  "reference": "Spitzer, R. L. et al. (2006). A brief measure for assessing generalized anxiety disorder: The GAD-7. Archives of Internal Medicine.",
+  "bands": [
+    {
+      "min": 0,
+      "max": 4,
+      "label": "최소",
+      "message": "지난 2주 동안 불안 증상이 거의 없었어요.",
+      "recommend": "none"
+    },
+    {
+      "min": 5,
+      "max": 9,
+      "label": "가벼움",
+      "message": "가벼운 불안 증상이 있었어요. 지금처럼 연습을 이어가 보세요.",
+      "recommend": "none"
+    },
+    {
+      "min": 10,
+      "max": 14,
+      "label": "중간",
+      "message": "중간 정도의 불안 증상이 있었어요. 이 앱과 함께 전문가에게 한 번 평가를 받아 보면 도움이 될 수 있어요.",
+      "recommend": "suggest"
+    },
+    {
+      "min": 15,
+      "max": 21,
+      "label": "심함",
+      "message": "불안 증상이 심한 편이었어요. 전문가의 도움을 받아 보길 권해요.",
+      "recommend": "strong"
+    }
+  ]
+}

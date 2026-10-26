@@ -7,6 +7,7 @@ import { ModulePlayer, type PlayerContext } from './player/ModulePlayer';
 import { CrisisButton, CrisisEmphasisProvider } from './safety/CrisisButton';
 import { CrisisScreen } from './safety/CrisisScreen';
 import { ApproachResult } from './screens/ApproachResult';
+import { AssessmentRoute } from './screens/Assessment';
 import { CheckIn } from './screens/CheckIn';
 import { Home } from './screens/Home';
 import { Modules } from './screens/Modules';
@@ -63,6 +64,7 @@ function Layout() {
           <Route path="/m/:id/:variant" element={<PlayerRoute />} />
           <Route path="/worry" element={<WorryMemo />} />
           <Route path="/routine/:name/:index" element={<Routine />} />
+          <Route path="/assess/:instrument" element={<AssessmentRoute />} />
           <Route path="/approach/:id" element={<ApproachResult />} />
           <Route path="/crisis" element={<CrisisRoute />} />
           <Route path="*" element={<Home />} />
