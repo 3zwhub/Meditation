@@ -1,7 +1,7 @@
-import { Component, type ReactNode } from 'react';
+import { Component, useEffect, useState, type ReactNode } from 'react';
 import { HashRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getModule } from './content/load';
-import { logCrisisEvent } from './db/repo';
+import { getMeta, logCrisisEvent } from './db/repo';
 import type { VariantKey } from './domain/types';
 import { ModulePlayer, type PlayerContext } from './player/ModulePlayer';
 import { CrisisButton, CrisisEmphasisProvider } from './safety/CrisisButton';
@@ -15,6 +15,7 @@ import { Recommend } from './screens/Recommend';
 import { Routine } from './screens/Routine';
 import { Settings } from './screens/Settings';
 import { Weekly } from './screens/Weekly';
+import { ONBOARDING_KEY, Welcome } from './screens/Welcome';
 import { WorryMemo } from './screens/WorryMemo';
 
 function PlayerRoute() {
@@ -39,10 +40,28 @@ function CrisisRoute() {
   return <CrisisScreen onBack={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))} />;
 }
 
+/** 처음 연 사람은 온보딩으로. 위기 화면은 언제든 바로 열리고, 기록을 못 읽으면 막지 않는다. */
+function useOnboardingGate() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [checked, setChecked] = useState(false);
+  useEffect(() => {
+    if (checked) return;
+    getMeta<string>(ONBOARDING_KEY)
+      .then((done) => {
+        const path = location.pathname;
+        if (!done && !path.startsWith('/welcome') && path !== '/crisis') navigate('/welcome/0', { replace: true });
+      })
+      .catch(() => {})
+      .finally(() => setChecked(true));
+  }, [checked, location.pathname, navigate]);
+}
+
 function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const inPlayer = location.pathname.startsWith('/m/') || location.pathname.startsWith('/routine/');
+  useOnboardingGate();
+  const inPlayer = ['/m/', '/routine/', '/welcome'].some((p) => location.pathname.startsWith(p));
   const onCrisis = location.pathname === '/crisis';
   return (
     <div className="app">
@@ -69,6 +88,8 @@ function Layout() {
           <Route path="/assess/:instrument" element={<AssessmentRoute />} />
           <Route path="/week" element={<Weekly />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/welcome/:step" element={<Welcome />} />
           <Route path="/approach/:id" element={<ApproachResult />} />
           <Route path="/crisis" element={<CrisisRoute />} />
           <Route path="*" element={<Home />} />

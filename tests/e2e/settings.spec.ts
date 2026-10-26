@@ -1,7 +1,7 @@
 // 작업 12: 설정과 데이터
 import { readFileSync } from 'node:fs';
-import { expect, test, type Download } from '@playwright/test';
-import { readStore, runToOutro, startModule } from './helpers';
+import { type Download } from '@playwright/test';
+import { expect, test, readStore, runToOutro, startModule } from './helpers';
 
 test('개인 설정이 추천·화면에 반영된다', async ({ page }) => {
   await page.goto('/#/settings');

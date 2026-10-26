@@ -1,6 +1,6 @@
 // 작업 9 완료 기준: 2단계 sequences.md의 하루 일정을 그대로 따라간다.
-import { expect, test, type Page } from '@playwright/test';
-import { forward, readStore, runToOutro, startModule } from './helpers';
+import { type Page } from '@playwright/test';
+import { expect, test, forward, readStore, runToOutro, startModule } from './helpers';
 
 const todayCard = (page: Page) => page.locator('.card').filter({ hasText: '아침 루틴' });
 

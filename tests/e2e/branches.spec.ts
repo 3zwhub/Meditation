@@ -1,6 +1,5 @@
 // 분기마다 결과가 달라지는 경우 (작업 7)
-import { expect, test } from '@playwright/test';
-import { forward, startModule } from './helpers';
+import { expect, test, forward, startModule } from './helpers';
 
 const next = forward;
 const start = startModule;

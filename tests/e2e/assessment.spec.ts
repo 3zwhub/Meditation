@@ -1,5 +1,5 @@
 // 작업 10: 공식 한국어판 문항이 들어오기 전에는 검사를 시작할 수 없다.
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers';
 
 test('모든 연습 → 점수로 돌아보기 → 문항 준비 중', async ({ page }) => {
   await page.goto('/#/modules');

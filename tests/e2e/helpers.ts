@@ -1,4 +1,41 @@
-import { expect, type Page } from '@playwright/test';
+import { test as base, expect, type Page } from '@playwright/test';
+
+/**
+ * 온보딩을 이미 마친 사용자로 시작한다. 위기 화면은 온보딩으로 보내지 않으므로 그곳에서
+ * 앱이 기록 저장소를 만들 때까지 기다렸다가 완료 표시를 넣는다. 온보딩 자체는 welcome.spec.ts에서 본다.
+ */
+export const test = base.extend({
+  page: async ({ page }, use) => {
+    await page.goto('/#/crisis');
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          const tryOnce = (left: number) => {
+            const req = indexedDB.open('meditation');
+            req.onerror = () => reject(req.error);
+            req.onsuccess = () => {
+              const db = req.result;
+              if (!db.objectStoreNames.contains('meta')) {
+                db.close();
+                if (left <= 0) return reject(new Error('저장소가 만들어지지 않았어요'));
+                return setTimeout(() => tryOnce(left - 1), 100);
+              }
+              const tx = db.transaction('meta', 'readwrite');
+              tx.objectStore('meta').put({ key: 'onboardingDone', value: '2026-01-01T00:00:00Z' });
+              tx.oncomplete = () => {
+                db.close();
+                resolve();
+              };
+            };
+          };
+          tryOnce(50);
+        }),
+    );
+    await use(page);
+  },
+});
+
+export { expect };
 
 export async function readStore(page: Page, store: string) {
   return page.evaluate(

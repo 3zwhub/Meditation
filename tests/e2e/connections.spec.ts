@@ -1,6 +1,5 @@
 // 작업 8: 모듈 사이에 값이 넘어가고, 다가간 일이 자동으로 기록된다.
-import { expect, test } from '@playwright/test';
-import { forward, readStore, runToOutro, startModule } from './helpers';
+import { expect, test, forward, readStore, runToOutro, startModule } from './helpers';
 
 test('기꺼이 경험하기에서 적은 할 일이 반대 행동으로 넘어간다', async ({ page }) => {
   await startModule(page, 'AC03/minimal');

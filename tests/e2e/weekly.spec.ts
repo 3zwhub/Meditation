@@ -1,6 +1,5 @@
 // 작업 11: 주간 화면
-import { expect, test } from '@playwright/test';
-import { forward, runToOutro, startModule } from './helpers';
+import { expect, test, forward, runToOutro, startModule } from './helpers';
 
 test('연습·다가간 일·저녁 기록이 주간 화면에 모인다', async ({ page }) => {
   await page.clock.install({ time: new Date(2026, 10, 18, 10, 0) }); // 수요일

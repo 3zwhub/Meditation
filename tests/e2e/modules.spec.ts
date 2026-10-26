@@ -1,7 +1,6 @@
 // 작업 7 완료 기준: 16개 모듈을 각 버전마다 끝까지 한 번씩 진행한다.
 import { readFileSync, readdirSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
-import { readStore, runToOutro, startModule } from './helpers';
+import { expect, test, readStore, runToOutro, startModule } from './helpers';
 
 const modules = readdirSync('content/modules').map((f) => JSON.parse(readFileSync(`content/modules/${f}`, 'utf8')) as {
   id: string;
