@@ -11,6 +11,9 @@
   --crisis: #b3261e;
   --crisis-soft: #fbe9e7;
   --on-crisis: #ffffff;
+  /* 그래프 막대: 회색으로 읽히지 않도록 채도를 높인 색 (dataviz 검사 통과) */
+  --chart: #1f8a70;
+  --grid: #e7e3da;
   --radius: 16px;
   --tap: 48px;
   --font-size: calc(18px * var(--text-scale, 1));
@@ -31,6 +34,8 @@
     --crisis: #ff8a80;
     --crisis-soft: #3a1e1c;
     --on-crisis: #2a0603;
+    --chart: #2fa585;
+    --grid: #2a3330;
     color-scheme: dark;
   }
 }
@@ -48,6 +53,8 @@
   --crisis: #ff8a80;
   --crisis-soft: #3a1e1c;
   --on-crisis: #2a0603;
+  --chart: #2fa585;
+  --grid: #2a3330;
   color-scheme: dark;
 }
 
@@ -119,7 +126,7 @@ main { flex: 1; padding: 8px 16px 24px; }
   position: sticky;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   background: var(--surface);
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
@@ -262,3 +269,22 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.stat strong { display: block; font-size: 1.6em; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 0.8em; color: var(--text-2); }
+
+.weekbars { margin: 0 0 8px; }
+.weekbars-title { font-weight: 600; margin-bottom: 8px; }
+.weekbars-plot { position: relative; height: 140px; margin-left: 24px; }
+.weekbars-grid span { position: absolute; left: -24px; width: calc(100% + 24px); border-bottom: 1px solid var(--grid); font-size: 0.7em; color: var(--text-2); line-height: 0; }
+.weekbars-cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); }
+.weekbars-col { position: relative; background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; }
+.weekbars-bar { width: min(24px, 60%); background: var(--chart); border-radius: 4px 4px 0 0; }
+.weekbars-col[aria-pressed='true'] .weekbars-bar { outline: 2px solid var(--text-2); outline-offset: 2px; }
+.weekbars-missing { color: var(--text-2); font-size: 0.9em; margin-bottom: 2px; }
+.weekbars-value { position: absolute; transform: translateY(-4px); font-size: 0.8em; font-weight: 700; color: var(--text); }
+.weekbars-days { display: grid; grid-template-columns: repeat(7, 1fr); margin-left: 24px; text-align: center; font-size: 0.8em; color: var(--text-2); margin-top: 4px; }
+.weekbars-table { width: 100%; font-size: 0.9em; }
+.weekbars-table th { text-align: left; font-weight: 400; }

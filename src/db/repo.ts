@@ -374,3 +374,23 @@ export async function dailyLowMoodOrEnergy(now = new Date(), days = 14): Promise
   }
   return out;
 }
+
+// ---- 주간 화면 (작업 11) ----
+
+/** 주간 화면에 필요한 기록: 그 주와 지난주, 그리고 조정 규칙용 최근 14일. */
+export async function weeklyData(weekStartDay: string, now = new Date()) {
+  const day = await today(now);
+  const from = [addDays(weekStartDay, -7), addDays(day, -13)].sort()[0];
+  const to = addDays(weekStartDay, 6) > day ? addDays(weekStartDay, 6) : day;
+  const db = getDB();
+  const [sessions, checkins, journals, attempts, worryNotes, gad7] = await Promise.all([
+    db.sessions.where('localDate').between(from, to, true, true).toArray(),
+    db.checkins.where('localDate').between(from, to, true, true).toArray(),
+    db.journalEntries.where('localDate').between(from, to, true, true).toArray(),
+    db.approachAttempts.where('localDate').between(from, to, true, true).toArray(),
+    db.worryNotes.where('localDate').between(from, to, true, true).toArray(),
+    listAssessments('GAD7'),
+  ]);
+  const firstUseDay = (await db.sessions.orderBy('localDate').first())?.localDate;
+  return { today: day, sessions, checkins, journals, attempts, worryNotes, gad7, firstUseDay };
+}

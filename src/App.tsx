@@ -13,6 +13,7 @@ import { Home } from './screens/Home';
 import { Modules } from './screens/Modules';
 import { Recommend } from './screens/Recommend';
 import { Routine } from './screens/Routine';
+import { Weekly } from './screens/Weekly';
 import { WorryMemo } from './screens/WorryMemo';
 
 function PlayerRoute() {
@@ -65,6 +66,7 @@ function Layout() {
           <Route path="/worry" element={<WorryMemo />} />
           <Route path="/routine/:name/:index" element={<Routine />} />
           <Route path="/assess/:instrument" element={<AssessmentRoute />} />
+          <Route path="/week" element={<Weekly />} />
           <Route path="/approach/:id" element={<ApproachResult />} />
           <Route path="/crisis" element={<CrisisRoute />} />
           <Route path="*" element={<Home />} />
@@ -74,6 +76,7 @@ function Layout() {
         <nav className="bottomnav" aria-label="주요 메뉴">
           <NavLink to="/" end>홈</NavLink>
           <NavLink to="/modules">모든 연습</NavLink>
+          <NavLink to="/week">주간</NavLink>
         </nav>
       )}
     </div>
