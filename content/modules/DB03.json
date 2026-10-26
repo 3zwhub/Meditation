@@ -1,6 +1,6 @@
 {
   "id": "DB03",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "name": "반대 행동",
   "summary": "불안이 피하라고 할 때, 아주 작은 한 걸음 다가가서 예상이 맞는지 확인해요.",
   "category": "dbt",
@@ -159,6 +159,32 @@
               "label": "나중에 할게요"
             }
           ]
+        },
+        {
+          "id": "when",
+          "type": "choice",
+          "label": "언제 해볼까요?",
+          "options": [
+            {
+              "value": "오늘 중",
+              "label": "오늘 중"
+            },
+            {
+              "value": "내일",
+              "label": "내일"
+            },
+            {
+              "value": "이번 주 안에",
+              "label": "이번 주 안에"
+            }
+          ],
+          "showIf": "answer.did == 'later'"
+        },
+        {
+          "id": "e3",
+          "type": "exit",
+          "text": "좋아요. 정한 때에 해보고, 홈 화면의 '예정된 다가가기'에서 결과를 기록해 보세요.",
+          "showIf": "answer.did == 'later'"
         },
         {
           "id": "smaller",
@@ -421,9 +447,29 @@
           ]
         },
         {
+          "id": "when",
+          "type": "choice",
+          "label": "언제 해볼까요?",
+          "options": [
+            {
+              "value": "오늘 중",
+              "label": "오늘 중"
+            },
+            {
+              "value": "내일",
+              "label": "내일"
+            },
+            {
+              "value": "이번 주 안에",
+              "label": "이번 주 안에"
+            }
+          ],
+          "showIf": "answer.go == 'later'"
+        },
+        {
           "id": "e2",
           "type": "exit",
-          "text": "좋아요. 정한 때에 해보고, 그때 이 연습을 다시 열어 결과를 기록해 보세요.",
+          "text": "좋아요. 정한 때에 해보고, 홈 화면의 '예정된 다가가기'에서 결과를 기록해 보세요.",
           "showIf": "answer.go == 'later'"
         },
         {
@@ -540,5 +586,6 @@
     "hofmann2008",
     "carpenter2018",
     "craske2014"
-  ]
+  ],
+  "record": "approach"
 }

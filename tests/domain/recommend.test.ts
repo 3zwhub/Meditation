@@ -67,6 +67,10 @@ describe('상태 판별', () => {
     expect(recommend(input({ states: ['F'] }, { urgeAction: 'avoid' })).state).toBe('C');
     expect(recommend(input({ states: ['F'] }, { urgeAction: 'check' })).state).toBe('B');
   });
+  it('불안 7점 이상이면 감정이 시키는 행동보다 몸 먼저', () => {
+    expect(recommend(input({ states: ['C'], anxiety: 8 }, { urgeAction: 'avoid' })).state).toBe('A');
+    expect(recommend(input({ states: ['B'], anxiety: 8 }, { urgeAction: 'anger' })).state).toBe('D');
+  });
 });
 
 describe('개인 설정과 조건', () => {

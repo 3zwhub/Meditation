@@ -1,10 +1,10 @@
 // 콘텐츠만으로 표현할 수 없는 전용 단계 (설계 1.3의 list 등). 각각 답을 answers에 남긴다.
 import { useEffect, useState } from 'react';
 import { AFFIRMATIONS, getModule } from '../content/load';
-import { addWorryNote, listWorryNotes, today, todayActivity, updateSettings, updateWorryNote } from '../db/repo';
+import { addWorryNote, latestValue, listThoughts, listWorryNotes, today, todayActivity, updateSettings, updateWorryNote } from '../db/repo';
 import { WEAKER_BELOW, pickAffirmation } from '../domain/affirmations';
 import { localDate, timeOfDay } from '../domain/day';
-import type { Settings, StateId, WorryNote } from '../domain/types';
+import type { Settings, StateId, Thought, WorryNote } from '../domain/types';
 import { ChoiceList, ScaleButtons, TextInput } from '../ui/inputs';
 
 type SetAnswer = (value: unknown) => void;
@@ -105,12 +105,20 @@ export function WorryReviewView({ onChange }: { onChange: SetAnswer }) {
 
 /** AF01: 상태에 맞는 확언 하나. 믿는 정도가 3점 미만이면 더 약한 버전을 보여준다. */
 export function AffirmationView({ state, settings, value, onChange }: { state?: StateId; settings: Settings | null; value: unknown; onChange: SetAnswer }) {
+  // 저장된 내 가치가 있으면 가치형 확언의 {가치} 자리에 넣는다
+  const [myValue, setMyValue] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    latestValue().then((v) => setMyValue(v?.label ?? null), () => setMyValue(null));
+  }, []);
+  if (myValue === undefined) return null;
   const now = new Date();
   const picked = pickAffirmation(AFFIRMATIONS, {
     state,
     time: timeOfDay(now),
     day: localDate(now, settings?.dayBoundaryHour ?? 4),
+    have: myValue ? ['value'] : [],
   });
+  const fill = (t: string) => (myValue ? t.replace('{가치}을/를', `'${myValue}'을/를`).replace('{가치}', myValue) : t);
   const v = (value ?? {}) as { affirmationBelief?: number; usedWeaker?: boolean; weakerBelief?: number };
   if (!picked) return <p className="say">오늘은 확언 없이 넘어가도 괜찮아요.</p>;
   const showWeaker = v.affirmationBelief !== undefined && v.affirmationBelief < WEAKER_BELOW;
@@ -118,7 +126,7 @@ export function AffirmationView({ state, settings, value, onChange }: { state?: 
   return (
     <div>
       <p>이 문장을 천천히, 소리 내거나 마음속으로 한 번 읽어 보세요.</p>
-      <p className="say" style={{ fontWeight: 700, margin: '16px 0 24px', textAlign: 'center' }}>“{picked.text}”</p>
+      <p className="say" style={{ fontWeight: 700, margin: '16px 0 24px', textAlign: 'center' }}>“{fill(picked.text)}”</p>
       <ScaleButtons
         label="이 말이 얼마나 믿어지나요?"
         value={v.affirmationBelief}
@@ -127,12 +135,39 @@ export function AffirmationView({ state, settings, value, onChange }: { state?: 
       {showWeaker && (
         <>
           <p>조금 더 작은 말로 바꿔 볼게요.</p>
-          <p className="say" style={{ fontWeight: 700, margin: '16px 0 24px', textAlign: 'center' }}>“{picked.weaker}”</p>
+          <p className="say" style={{ fontWeight: 700, margin: '16px 0 24px', textAlign: 'center' }}>“{fill(picked.weaker)}”</p>
           <ScaleButtons label="이 말은 얼마나 믿어지나요?" value={v.weakerBelief} onChange={(b) => onChange({ ...v, affirmationId: picked.id, weakerBelief: b })} />
         </>
       )}
       {noneFit && <p>오늘은 이 문장들이 와닿지 않는 날이네요. 그것도 괜찮아요.</p>}
     </div>
+  );
+}
+
+/** CB02: 이전에 기록한 생각과 같은지 (MVP는 글 유사도 대신 사용자가 고른다, 설계 2.3). */
+export function ThoughtSelectView({ value, onChange }: { value: unknown; onChange: (id: string, text?: string) => void }) {
+  const [thoughts, setThoughts] = useState<Thought[] | null>(null);
+  useEffect(() => {
+    listThoughts().then(setThoughts, () => setThoughts([]));
+  }, []);
+  if (!thoughts) return null;
+  return (
+    <ChoiceList
+      label="이전에 기록한 생각과 같은 생각인가요?"
+      options={[
+        ...thoughts.map((t) => ({
+          value: t.id,
+          label: t.text,
+          hint: t.recordCount > 0 ? `사고기록지로 ${t.recordCount}번 기록함` : t.storyTitle,
+        })),
+        { value: 'new', label: '새로운 생각이에요' },
+      ]}
+      value={typeof value === 'string' ? [value] : []}
+      onChange={(v) => {
+        const t = thoughts.find((x) => x.id === v[0]);
+        onChange(v[0], t?.text);
+      }}
+    />
   );
 }
 
@@ -185,9 +220,9 @@ export function TippScreeningView({ onChange, onSettings }: { onChange: SetAnswe
   );
 }
 
-/** JR01: 오늘 앱에서 한 것 (자동 표시). */
+/** JR01: 오늘 앱에서 한 것 (자동 표시). DB03에서 다가간 일은 자동으로 들어간다 (1단계 5장). */
 export function TodaySummaryView({ onChange }: { onChange: SetAnswer }) {
-  const [summary, setSummary] = useState<{ names: string[]; ids: string[]; worries: number } | null>(null);
+  const [summary, setSummary] = useState<{ names: string[]; worries: number; approached: string[] } | null>(null);
   useEffect(() => {
     todayActivity()
       .then((a) => {
@@ -195,22 +230,32 @@ export function TodaySummaryView({ onChange }: { onChange: SetAnswer }) {
         const counts = new Map<string, number>();
         for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
         const names = [...counts].map(([id, n]) => `${getModule(id)?.name ?? id} ${n}회`);
-        setSummary({ names, ids, worries: a.worryNoteCount });
-        onChange({ sessions: ids, worryNoteCount: a.worryNoteCount });
+        setSummary({ names, worries: a.worryNoteCount, approached: a.approached.map((x) => x.action) });
+        onChange({ sessions: ids, worryNoteCount: a.worryNoteCount, approachAttemptIds: a.approached.map((x) => x.id) });
       })
-      .catch(() => setSummary({ names: [], ids: [], worries: 0 }));
+      .catch(() => setSummary({ names: [], worries: 0, approached: [] }));
   }, []);
   if (!summary) return null;
+  const empty = !summary.names.length && !summary.worries && !summary.approached.length;
   return (
     <div className="card">
       <p style={{ fontWeight: 600 }}>오늘 앱에서 한 것</p>
-      {summary.names.length || summary.worries ? (
-        <p>
-          {summary.names.join(' · ')}
-          {summary.worries > 0 && `${summary.names.length ? ' · ' : ''}걱정 메모 ${summary.worries}개`}
-        </p>
-      ) : (
+      {empty ? (
         <p className="muted">오늘은 앱에서 한 연습이 없어요. 그래도 괜찮아요.</p>
+      ) : (
+        <>
+          {(summary.names.length > 0 || summary.worries > 0) && (
+            <p>
+              {summary.names.join(' · ')}
+              {summary.worries > 0 && `${summary.names.length ? ' · ' : ''}걱정 메모 ${summary.worries}개`}
+            </p>
+          )}
+          {summary.approached.length > 0 && (
+            <p>
+              <strong>다가간 일:</strong> {summary.approached.join(', ')}
+            </p>
+          )}
+        </>
       )}
     </div>
   );

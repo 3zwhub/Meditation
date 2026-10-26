@@ -56,8 +56,63 @@ export interface JournalEntry extends BaseRecord {
   responseNote?: string;
   good?: string;
   goodRole?: string;
-  autoSummary?: { sessions: ModuleId[]; worryNoteCount: number };
+  autoSummary?: { sessions: ModuleId[]; worryNoteCount: number; approachAttemptIds?: string[] };
   tomorrowTask?: string;
+}
+
+/** CB02·AC01에서 다룬 생각. 같은 생각을 CB02로 반복 기록하는지 보기 위해 따로 둔다 (설계 2.3). */
+export interface Thought {
+  id: string;
+  createdAt: string;
+  text: string;
+  storyTitle?: string;
+  patterns: string[];
+  recordCount: number; // CB02로 기록한 횟수
+  lastRecordedAt?: string; // 마지막 CB02 기록 시각
+  lastBelief?: number;
+}
+
+/** 다가가고 싶은 일과 사다리 (DB03, AC03). */
+export interface ApproachTask {
+  id: string;
+  createdAt: string;
+  title: string;
+  ladder: { step: number; action: string; expectedAnxiety?: number }[];
+  currentStep?: number;
+  archived: boolean;
+}
+
+export type AttemptStatus = 'planned' | 'done' | 'stoppedMidway' | 'skipped';
+
+/** 다가가기 시도 1회. done·stoppedMidway가 그날의 "다가간 일"이다 (1단계 5장). */
+export interface ApproachAttempt extends BaseRecord {
+  approachTaskId: string;
+  sessionId?: string;
+  action: string; // 실제로 한 (또는 할) 행동
+  ladderStep?: number;
+  firstStepOnly: boolean;
+  factCheck: 'notDanger' | 'danger' | 'unsure';
+  prediction?: string;
+  confidence?: number;
+  safetyBehaviorDropped?: string;
+  scheduledFor?: string;
+  status: AttemptStatus;
+  peakAnxiety?: number;
+  outcome?: string;
+  predictionCameTrue?: 'none' | 'partly' | 'fully' | 'worse';
+  learned?: string;
+}
+
+export const APPROACHED: AttemptStatus[] = ['done', 'stoppedMidway'];
+
+/** AF01 가치 확언 쓰기에서 저장하는 내 가치. */
+export interface ValueRecord {
+  id: string;
+  createdAt: string;
+  label: string;
+  why?: string;
+  sentence?: string;
+  belief?: number;
 }
 
 export interface WorryNote extends BaseRecord {

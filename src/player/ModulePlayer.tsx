@@ -3,12 +3,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getModule } from '../content/load';
 import type { ModuleContent, Step } from '../content/schema';
-import { addJournalEntry, getSettings, logCrisisEvent, startSession, updateRecommendation, updateSession, updateSettings } from '../db/repo';
+import { countThoughts, getSettings, logCrisisEvent, startSession, updateRecommendation, updateSession, updateSettings } from '../db/repo';
 import { evaluate } from '../domain/conditions';
-import type { JournalResponse, SessionEntry, Settings, StateId, VariantKey } from '../domain/types';
+import type { SessionEntry, Settings, StateId, VariantKey } from '../domain/types';
 import { CRISIS_EVENT, useCrisisEmphasis } from '../safety/CrisisButton';
 import { ScaleButtons } from '../ui/inputs';
-import { AffirmationView, TippScreeningView, TodaySummaryView, WorryMemoView, WorryReviewView } from './SpecialSteps';
+import { carryForward, saveRecords } from './records';
+import { AffirmationView, ThoughtSelectView, TippScreeningView, TodaySummaryView, WorryMemoView, WorryReviewView } from './SpecialSteps';
 import { InputView, PacerView, SayView, TimerView, useWakeLock } from './StepViews';
 import { stepDuration } from './timeline';
 
@@ -18,6 +19,8 @@ export interface PlayerContext {
   fromSessionId?: string;
   recommendationId?: string;
   state?: StateId;
+  /** 앞 모듈에서 넘겨받은 값 (표준 키). 같은 id의 단계가 있으면 미리 채운다. */
+  carry?: Record<string, unknown>;
 }
 
 type Phase = 'pre' | 'steps' | 'post' | 'outro' | 'stopped';
@@ -31,6 +34,7 @@ function isAnswered(step: Step, value: unknown): boolean {
   switch (step.type) {
     case 'exit':
     case 'worryReview':
+    case 'thoughtSelect':
     case 'todaySummary':
       return true;
     case 'affirmation': {
@@ -60,9 +64,6 @@ function templateVars(steps: Step[], answers: Record<string, unknown>): Record<s
   return vars;
 }
 
-const num = (v: unknown) => (typeof v === 'number' ? v : undefined);
-const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
-
 export function ModulePlayer({ module, variant, context }: { module: ModuleContent; variant: VariantKey; context: PlayerContext }) {
   const navigate = useNavigate();
   const { setEmphasis } = useCrisisEmphasis();
@@ -72,7 +73,12 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   const [phase, setPhase] = useState<Phase>('pre');
   const [pre, setPre] = useState<number | undefined>();
   const [post, setPost] = useState<number | undefined>();
-  const [answers, setAnswers] = useState<Record<string, unknown>>({});
+  // 앞 모듈에서 넘겨받은 값 중 이 버전에 같은 id의 단계가 있는 것만 미리 채운다
+  const [answers, setAnswers] = useState<Record<string, unknown>>(() => {
+    const ids = new Set(v.steps.map((st) => st.id));
+    return Object.fromEntries(Object.entries(context.carry ?? {}).filter(([k]) => ids.has(k)));
+  });
+  const [hasThoughts, setHasThoughts] = useState(false);
   const [index, setIndex] = useState(0);
   const [stepStartedAt, setStepStartedAt] = useState(() => Date.now());
   const [helpOpen, setHelpOpen] = useState(false);
@@ -91,7 +97,14 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
     let cancelled = false;
     sessionReady.current = (async () => {
       try {
-        setSettings(await getSettings());
+        const loaded = await getSettings();
+        setSettings(loaded);
+        // 설정에 기억해 둔 선택(MD02의 호흡/소리)을 미리 고른다
+        const remembered = Object.fromEntries(
+          v.steps.flatMap((st) => (st.type === 'choice' && st.setting ? [[st.id, loaded[st.setting]]] : [])),
+        );
+        setAnswers((a) => ({ ...remembered, ...a }));
+        setHasThoughts((await countThoughts()) > 0);
         const s = await startSession({
           moduleId: module.id,
           contentVersion: module.contentVersion,
@@ -111,6 +124,7 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
     return () => {
       cancelled = true;
     };
+    // 세션은 화면을 열 때 한 번만 만든다 (v.steps는 module·variant에 따라 정해진다)
   }, [module.id, module.contentVersion, variant, context.entry, context.checkinId, context.fromSessionId, context.recommendationId]);
 
   // 화면을 떠나면 위기 버튼 강조를 되돌린다
@@ -132,9 +146,16 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
     async (reason: 'user' | 'crisis' | 'stopSignal' | 'troubleshooting') => {
       if (phaseRef.current === 'stopped' || phaseRef.current === 'outro') return;
       setPhase('stopped');
-      await save({ status: 'stopped', stopReason: reason, endedAt: new Date().toISOString(), answers, pre: preRecord() });
+      let extra: Record<string, unknown> = {};
+      try {
+        await sessionReady.current;
+        extra = await saveRecords(module, variant, answers, { sessionId: sessionId.current ?? undefined, stopped: true });
+      } catch (e) {
+        console.error('기록을 저장하지 못했어요', e);
+      }
+      await save({ status: 'stopped', stopReason: reason, endedAt: new Date().toISOString(), answers: { ...answers, ...extra }, pre: preRecord() });
     },
-    [answers, preRecord, save],
+    [answers, preRecord, save, module, variant],
   );
 
   // 위기 버튼을 누르면 진행 중인 모듈을 멈춤으로 저장한다 (설계 8.2-1)
@@ -157,9 +178,10 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   const visible = useCallback(
     (step: Step) => {
       if (step.type === 'tippScreening' && settings?.tippScreening.done) return false;
+      if (step.type === 'thoughtSelect' && !hasThoughts) return false;
       return !step.showIf || evaluate(step.showIf, scope);
     },
-    [scope, settings],
+    [scope, settings, hasThoughts],
   );
 
   /** 모든 단계를 마쳤을 때. */
@@ -233,33 +255,21 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   async function complete(value: number | undefined) {
     setPost(value);
     setPhase('outro');
+    let extra: Record<string, unknown> = {};
+    try {
+      await sessionReady.current;
+      extra = await saveRecords(module, variant, answers, { sessionId: sessionId.current ?? undefined, stopped: false });
+    } catch (e) {
+      console.error('기록을 저장하지 못했어요', e);
+    }
+    if (Object.keys(extra).length) setAnswers((a) => ({ ...a, ...extra }));
     await save({
       status: 'completed',
       endedAt: new Date().toISOString(),
       pre: preRecord(),
       post: value === undefined || !postId ? {} : { [postId]: value },
-      answers,
+      answers: { ...answers, ...extra },
     });
-    if (module.record === 'journal') {
-      const summary = answers.todaySummary as { sessions: string[]; worryNoteCount: number } | undefined;
-      try {
-        await addJournalEntry({
-          anxiety: num(answers.dayAnxiety) ?? 0,
-          mood: num(answers.dayMood) ?? 0,
-          energy: num(answers.dayEnergy) ?? 0,
-          oneLine: str(answers.oneLine),
-          anxiousMoment: str(answers.anxiousMoment),
-          response: answers.response as JournalResponse[] | undefined,
-          responseNote: str(answers.responseNote),
-          good: str(answers.good),
-          goodRole: str(answers.goodRole),
-          autoSummary: summary,
-          tomorrowTask: str(answers.tomorrowTask),
-        });
-      } catch (e) {
-        console.error('저녁 기록을 저장하지 못했어요', e);
-      }
-    }
   }
 
   const setAnswer = (id: string, value: unknown) => setAnswers((a) => ({ ...a, [id]: value }));
@@ -271,7 +281,13 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
   const goTo = (moduleId: string, nextVariant: VariantKey) =>
     navigate(`/m/${moduleId}/${nextVariant}`, {
       replace: true,
-      state: { entry: 'next', fromSessionId: sessionId.current ?? undefined, checkinId: context.checkinId, state: context.state } satisfies PlayerContext,
+      state: {
+        entry: 'next',
+        fromSessionId: sessionId.current ?? undefined,
+        checkinId: context.checkinId,
+        state: context.state,
+        carry: carryForward(answers),
+      } satisfies PlayerContext,
     });
 
   const header = (
@@ -439,6 +455,9 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
             onChange={(val) => {
               setAnswer(step.id, val);
               if (step.type === 'scale' && typeof val === 'number') emphasizeIfLow(step.crisisEmphasisAtOrBelow, val);
+              if (step.type === 'choice' && step.setting === 'meditationAnchor' && (val === 'breath' || val === 'sound')) {
+                void updateSettings({ meditationAnchor: val }).then(setSettings, () => {});
+              }
             }}
           />
         )}
@@ -451,6 +470,12 @@ export function ModulePlayer({ module, variant, context }: { module: ModuleConte
         )}
         {step.type === 'tippScreening' && <TippScreeningView onChange={(val) => setAnswer(step.id, val)} onSettings={setSettings} />}
         {step.type === 'todaySummary' && <TodaySummaryView onChange={(val) => setAnswer(step.id, val)} />}
+        {step.type === 'thoughtSelect' && (
+          <ThoughtSelectView
+            value={answers[step.id]}
+            onChange={(id, text) => setAnswers((a) => ({ ...a, [step.id]: id, ...(text ? { [step.fillInto]: text } : {}) }))}
+          />
+        )}
       </div>
       <div className="player-footer">
         <button type="button" className="btn" onClick={() => setHelpOpen(true)}>

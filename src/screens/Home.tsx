@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { catalog, getModule } from '../content/load';
-import { getMeta, getSettings, recentHistory, setMeta } from '../db/repo';
+import { getMeta, getSettings, plannedApproachAttempts, recentHistory, setMeta, todayActivity } from '../db/repo';
 import { localDate } from '../domain/day';
 import { quickStartPicks } from '../domain/recommend';
-import { DEFAULT_SETTINGS } from '../domain/types';
+import { DEFAULT_SETTINGS, type ApproachAttempt } from '../domain/types';
 import { evaluateSafety } from '../safety/evaluate';
 import type { PlayerContext } from '../player/ModulePlayer';
 
@@ -14,6 +14,8 @@ export function Home() {
   const navigate = useNavigate();
   const [quick, setQuick] = useState<string[]>(DEFAULT_QUICK.filter((id) => getModule(id)));
   const [doneToday, setDoneToday] = useState(0);
+  const [approached, setApproached] = useState<string[]>([]);
+  const [planned, setPlanned] = useState<ApproachAttempt[]>([]);
   const [lowMood, setLowMood] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
@@ -26,6 +28,8 @@ export function Home() {
         const today = localDate(now, settings.dayBoundaryHour);
         setQuick(quickStartPicks({ settings, sessions: h.sessions, now, catalog: catalog() }));
         setDoneToday(h.sessions.filter((s) => s.localDate === today && s.status === 'completed').length);
+        setApproached((await todayActivity(now)).approached.map((a) => a.action));
+        setPlanned(await plannedApproachAttempts());
         const notice = evaluateSafety({
           now,
           journals: h.journals,
@@ -84,12 +88,38 @@ export function Home() {
         })}
       </div>
 
+      <Link to="/worry" className="btn btn-block" style={{ marginTop: 12 }}>
+        + 걱정 메모
+      </Link>
+
+      {planned.length > 0 && (
+        <>
+          <h2>예정된 다가가기</h2>
+          {planned.map((a) => (
+            <div key={a.id} className="card">
+              <p style={{ marginBottom: 4 }}>{a.action}</p>
+              {a.scheduledFor && <p className="muted">{a.scheduledFor}</p>}
+              <Link className="btn" to={`/approach/${a.id}`}>
+                결과 기록하기
+              </Link>
+            </div>
+          ))}
+        </>
+      )}
+
       <h2>오늘</h2>
       <div className="card">
         {loadError ? (
           <p className="muted">기록을 불러오지 못했어요. 연습과 위기 안내는 그대로 쓸 수 있어요.</p>
-        ) : doneToday > 0 ? (
-          <p>오늘 연습 {doneToday}번. 잘하고 있어요.</p>
+        ) : doneToday > 0 || approached.length > 0 ? (
+          <>
+            {doneToday > 0 && <p>오늘 연습 {doneToday}번. 잘하고 있어요.</p>}
+            {approached.length > 0 && (
+              <p>
+                <strong>다가간 일:</strong> {approached.join(', ')}
+              </p>
+            )}
+          </>
         ) : (
           <p className="muted">오늘은 아직 연습 기록이 없어요. 1분짜리부터 해볼 수 있어요.</p>
         )}

@@ -85,12 +85,16 @@
 | `affirmation` | — | 상태에 맞는 확언과 믿는 정도, 3점 미만이면 약한 버전 (AF01) |
 | `tippScreening` | — | 처음 한 번 하는 안전 확인, 결과는 설정에 저장 (DB01) |
 | `todaySummary` | — | 오늘 앱에서 한 것 자동 요약 (JR01) |
+| `thoughtSelect` | `fillInto` | 이전에 기록한 생각과 같은지 고르고, 고르면 `fillInto` 단계에 그 생각을 채움 (CB02, 같은 생각 반복 기록 감지) |
 
 - 모든 step에는 `id`가 있고, `showIf`(조건식)로 보여줄지 정할 수 있습니다. 답에 따른 분기는 이 `showIf`로 표현합니다.
 - 몸 부위·감정 단어·활동·가치·생각 패턴 같은 공용 선택지는 `choice`의 `lexicon`(`content/lexicon/*.json`)으로 씁니다. 몸 그림 선택(`bodyMap`)은 2차로 미뤘습니다.
 - `scale`과 시작 전·후 점수에는 `crisisEmphasisAtOrBelow`를 둘 수 있습니다. 그 점수 이하를 고르면 위기 버튼을 강조합니다(CB05·JR01의 기분 0~2점).
 - 문장 안의 `{변수}`는 같은 세션의 입력 `id`나 이전 단계 값(`{before}`, `{현재 시각}`)으로 채워집니다. 선택지 답은 보이는 글자로 채워집니다.
-- 저녁 기록(JR01)처럼 전후 점수가 없는 모듈은 `preMeasure`·`postMeasure`를 비우고, `record: "journal"`이면 완료 시 저녁 기록으로 저장합니다.
+- 저녁 기록(JR01)처럼 전후 점수가 없는 모듈은 `preMeasure`·`postMeasure`를 비웁니다.
+- `record`는 모듈을 마칠 때 답을 옮겨 저장할 곳입니다: `journal`(JR01 → `journalEntries`), `thought`(CB02·AC01 → `thoughts`), `approach`(DB03 → `approachTasks`·`approachAttempts`, 멈춘 경우도 저장), `value`(AF01 → `values`). 구현은 `src/player/records.ts`.
+- `choice`의 `setting`은 그 설정 값으로 미리 고르고, 고르면 설정에 기억합니다(MD02의 호흡/소리 → `settings.meditationAnchor`).
+- 다음 모듈로 넘어갈 때 표준 키(2.3 표)의 값이 함께 넘어가, 받는 모듈에 같은 id의 단계가 있으면 미리 채워집니다(`task`, `emotions`, `bodyParts`, AF01 `sentence` → AC03 `why`, AC01 `thought` → CB02 `prediction`).
 
 **Affirmation**
 

@@ -67,9 +67,12 @@ export function resolveState(
   checkin: Pick<Checkin, 'anxiety' | 'states'>,
   urgeAction?: UrgeAction,
 ): StateId {
-  if (urgeAction === 'avoid' || urgeAction === 'hide') return 'C';
-  if (urgeAction === 'ruminate' || urgeAction === 'check') return 'B';
   if (urgeAction === 'anger') return 'D';
+  // 불안 7점 이상이면 "몸 먼저"가 감정이 시키는 행동보다 우선한다 (1단계 1.4 원칙 1)
+  if (checkin.anxiety < 7) {
+    if (urgeAction === 'avoid' || urgeAction === 'hide') return 'C';
+    if (urgeAction === 'ruminate' || urgeAction === 'check') return 'B';
+  }
   const chosen = checkin.states.length ? checkin.states : (['F'] as StateId[]);
   let state = PRIORITY.find((s) => chosen.includes(s)) ?? 'F';
   // 1단계 1.4 원칙 1: 7점 이상이면 몸 먼저

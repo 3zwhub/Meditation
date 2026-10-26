@@ -1,7 +1,12 @@
 // 저장소 함수. 화면은 테이블을 직접 다루지 않고 이 함수들을 쓴다.
 import { addDays, localDate, stamp } from '../domain/day';
 import {
+  APPROACHED,
   DEFAULT_SETTINGS,
+  type ApproachAttempt,
+  type ApproachTask,
+  type Thought,
+  type ValueRecord,
   type Checkin,
   type CrisisEvent,
   type JournalEntry,
@@ -133,9 +138,142 @@ export async function addJournalEntry(data: Omit<JournalEntry, 'id' | 'createdAt
 export async function todayActivity(now = new Date()) {
   const day = await today(now);
   const db = getDB();
-  const [sessions, worryNoteCount] = await Promise.all([
+  const [sessions, worryNoteCount, attempts] = await Promise.all([
     db.sessions.where('localDate').equals(day).filter((s) => s.status === 'completed').toArray(),
     db.worryNotes.where('localDate').equals(day).count(),
+    db.approachAttempts.where('localDate').equals(day).filter((a) => APPROACHED.includes(a.status)).toArray(),
   ]);
-  return { sessions: sessions.sort((a, b) => a.startedAt.localeCompare(b.startedAt)), worryNoteCount };
+  return {
+    sessions: sessions.sort((a, b) => a.startedAt.localeCompare(b.startedAt)),
+    worryNoteCount,
+    approached: attempts.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+  };
+}
+
+// ---- 생각 (CB02·AC01) ----
+
+export async function listThoughts(limit = 5): Promise<Thought[]> {
+  const all = await getDB().thoughts.toArray();
+  return all.sort((a, b) => (b.lastRecordedAt ?? b.createdAt).localeCompare(a.lastRecordedAt ?? a.createdAt)).slice(0, limit);
+}
+
+export async function countThoughts() {
+  return getDB().thoughts.count();
+}
+
+/** 새 생각을 저장하거나, 고른 이전 생각을 갱신한다. CB02로 기록할 때만 recordCount가 오른다. */
+export async function saveThought(
+  data: { thoughtId?: string; text?: string; storyTitle?: string; patterns?: string[]; belief?: number; fromCB02: boolean },
+  now = new Date(),
+): Promise<string | undefined> {
+  const db = getDB();
+  const at = now.toISOString();
+  const existing = data.thoughtId ? await db.thoughts.get(data.thoughtId) : undefined;
+  if (existing) {
+    await db.thoughts.update(existing.id, {
+      recordCount: existing.recordCount + (data.fromCB02 ? 1 : 0),
+      lastRecordedAt: data.fromCB02 ? at : existing.lastRecordedAt,
+      lastBelief: data.belief ?? existing.lastBelief,
+      storyTitle: data.storyTitle ?? existing.storyTitle,
+      patterns: [...new Set([...existing.patterns, ...(data.patterns ?? [])])],
+    });
+    return existing.id;
+  }
+  if (!data.text) return undefined;
+  const t: Thought = {
+    id: newId(),
+    createdAt: at,
+    text: data.text,
+    storyTitle: data.storyTitle,
+    patterns: data.patterns ?? [],
+    recordCount: data.fromCB02 ? 1 : 0,
+    lastRecordedAt: data.fromCB02 ? at : undefined,
+    lastBelief: data.belief,
+  };
+  await db.thoughts.add(t);
+  return t.id;
+}
+
+/** 최근 14일 안에 CB02로 기록한 생각 중 가장 많이 기록한 횟수 (설계 3.2의 5번). */
+export async function maxRecentThoughtRecordCount(now = new Date(), days = 14): Promise<number> {
+  const since = new Date(now.getTime() - days * 86_400_000).toISOString();
+  const recent = await getDB().thoughts.filter((t) => (t.lastRecordedAt ?? '') >= since).toArray();
+  return Math.max(0, ...recent.map((t) => t.recordCount));
+}
+
+// ---- 다가가기 (DB03·AC03) ----
+
+const sameTitle = (a: string, b: string) => a.trim().replace(/\s+/g, ' ') === b.trim().replace(/\s+/g, ' ');
+
+/** 같은 제목의 다가가고 싶은 일이 있으면 다시 쓰고(사다리 갱신), 없으면 만든다. */
+export async function upsertApproachTask(title: string, ladder?: ApproachTask['ladder'], now = new Date()): Promise<ApproachTask> {
+  const db = getDB();
+  const found = (await db.approachTasks.toArray()).find((t) => !t.archived && sameTitle(t.title, title));
+  if (found) {
+    if (ladder?.length) {
+      await db.approachTasks.update(found.id, { ladder });
+      return { ...found, ladder };
+    }
+    return found;
+  }
+  const task: ApproachTask = { id: newId(), createdAt: now.toISOString(), title: title.trim(), ladder: ladder ?? [], archived: false };
+  await db.approachTasks.add(task);
+  return task;
+}
+
+export async function addApproachAttempt(
+  data: Omit<ApproachAttempt, 'id' | 'createdAt' | 'localDate' | 'timeOfDay'>,
+  now = new Date(),
+): Promise<ApproachAttempt> {
+  const { dayBoundaryHour } = await getSettings();
+  const attempt: ApproachAttempt = { id: newId(), ...stamp(now, dayBoundaryHour), ...data };
+  await getDB().approachAttempts.add(attempt);
+  if (data.ladderStep && APPROACHED.includes(data.status)) await getDB().approachTasks.update(data.approachTaskId, { currentStep: data.ladderStep });
+  return attempt;
+}
+
+/** 예정된 다가가기의 결과를 기록한다. 결과를 기록한 날이 다가간 날이다. */
+export async function completeApproachAttempt(id: string, patch: Partial<ApproachAttempt>, now = new Date()) {
+  const { dayBoundaryHour } = await getSettings();
+  const db = getDB();
+  const attempt = await db.approachAttempts.get(id);
+  if (!attempt) return;
+  const next = { ...patch, ...(patch.status && APPROACHED.includes(patch.status) ? stamp(now, dayBoundaryHour) : {}) };
+  await db.approachAttempts.update(id, next);
+  if (attempt.ladderStep && patch.status && APPROACHED.includes(patch.status)) {
+    await db.approachTasks.update(attempt.approachTaskId, { currentStep: attempt.ladderStep });
+  }
+}
+
+export async function getApproachAttempt(id: string) {
+  return getDB().approachAttempts.get(id);
+}
+
+export async function getApproachTask(id: string) {
+  return getDB().approachTasks.get(id);
+}
+
+export async function plannedApproachAttempts(): Promise<ApproachAttempt[]> {
+  return (await getDB().approachAttempts.where('status').equals('planned').toArray()).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+}
+
+// ---- 내 가치 (AF01) ----
+
+export async function addValue(data: Omit<ValueRecord, 'id' | 'createdAt'>, now = new Date()): Promise<ValueRecord> {
+  const v: ValueRecord = { id: newId(), createdAt: now.toISOString(), ...data };
+  await getDB().values.add(v);
+  return v;
+}
+
+export async function latestValue(): Promise<ValueRecord | undefined> {
+  const all = await getDB().values.toArray();
+  return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+}
+
+// ---- 걱정 메모 다시 오기 ----
+
+export async function bumpWorryNote(id: string) {
+  const db = getDB();
+  const note = await db.worryNotes.get(id);
+  if (note) await db.worryNotes.update(id, { repeatCount: note.repeatCount + 1 });
 }

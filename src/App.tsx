@@ -6,10 +6,12 @@ import type { VariantKey } from './domain/types';
 import { ModulePlayer, type PlayerContext } from './player/ModulePlayer';
 import { CrisisButton, CrisisEmphasisProvider } from './safety/CrisisButton';
 import { CrisisScreen } from './safety/CrisisScreen';
+import { ApproachResult } from './screens/ApproachResult';
 import { CheckIn } from './screens/CheckIn';
 import { Home } from './screens/Home';
 import { Modules } from './screens/Modules';
 import { Recommend } from './screens/Recommend';
+import { WorryMemo } from './screens/WorryMemo';
 
 function PlayerRoute() {
   const { id = '', variant = 'minimal' } = useParams();
@@ -58,6 +60,8 @@ function Layout() {
           <Route path="/recommend/:id" element={<Recommend />} />
           <Route path="/modules" element={<Modules />} />
           <Route path="/m/:id/:variant" element={<PlayerRoute />} />
+          <Route path="/worry" element={<WorryMemo />} />
+          <Route path="/approach/:id" element={<ApproachResult />} />
           <Route path="/crisis" element={<CrisisRoute />} />
           <Route path="*" element={<Home />} />
         </Routes>

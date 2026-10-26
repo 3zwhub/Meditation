@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalog } from '../content/load';
-import { addCheckin, addRecommendation, getSettings, recentHistory } from '../db/repo';
-import { recommend } from '../domain/recommend';
+import { addCheckin, addRecommendation, getSettings, listWorryNotes, maxRecentThoughtRecordCount, recentHistory, today } from '../db/repo';
+import { recommend, type UrgeAction } from '../domain/recommend';
 import type { StateId, ThoughtKind } from '../domain/types';
 import { useCrisisEmphasis } from '../safety/CrisisButton';
 import { emphasizeCrisis } from '../safety/evaluate';
@@ -57,8 +57,25 @@ export function CheckIn() {
         thoughtKind: states.includes('B') ? (thoughtKind[0] as ThoughtKind | undefined) : undefined,
         source: 'manual',
       });
-      const [settings, history] = await Promise.all([getSettings(), recentHistory(now)]);
-      const r = recommend({ checkin, settings, now, catalog: catalog(), history });
+      const [settings, history, maxThoughtRecordCount, worryNotes] = await Promise.all([
+        getSettings(),
+        recentHistory(now),
+        maxRecentThoughtRecordCount(now),
+        today(now).then(listWorryNotes),
+      ]);
+      // 30분 안에 감정 이름 붙이기(CB01)에서 고른 "감정이 시키는 행동"이 있으면 추천에 쓴다 (2단계 수정 제안 6)
+      const recentCB01 = history.sessions
+        .filter((s) => s.moduleId === 'CB01' && s.status === 'completed' && now.getTime() - new Date(s.startedAt).getTime() < 30 * 60_000)
+        .sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
+      const urgeAction = recentCB01?.answers.urgeAction as UrgeAction | undefined;
+      const r = recommend({
+        checkin,
+        urgeAction,
+        settings,
+        now,
+        catalog: catalog(),
+        history: { ...history, maxThoughtRecordCount, worryNotesToday: worryNotes.length },
+      });
       const rec = await addRecommendation({ checkinId: checkin.id, state: r.state, primary: r.primary, alternatives: r.alternatives, banner: r.banner }, now);
       navigate(`/recommend/${rec.id}`, { replace: true });
     } catch (e) {

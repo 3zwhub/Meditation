@@ -44,6 +44,8 @@ export const stepSchema = z.discriminatedUnion('type', [
     multi: z.boolean().optional(),
     maxSelect: z.number().int().positive().optional(),
     optional: z.boolean().optional(),
+    // 이 설정 값으로 미리 고르고, 고르면 설정에 기억한다 (MD02의 호흡/소리)
+    setting: z.literal('meditationAnchor').optional(),
   }),
   z.object({ ...base, type: z.literal('text'), label: z.string(), placeholder: z.string().optional(), example: z.string().optional(), optional: z.boolean().optional() }),
   // 모듈을 여기서 끝낸다 (DB03의 "불안이 사실에 맞는 경우" 등). 보통 showIf와 함께 쓴다
@@ -58,6 +60,8 @@ export const stepSchema = z.discriminatedUnion('type', [
   z.object({ ...base, type: z.literal('tippScreening') }),
   // JR01: 오늘 앱에서 한 것 자동 요약
   z.object({ ...base, type: z.literal('todaySummary') }),
+  // CB02: 이전에 기록한 생각과 같은지 고른다 (같은 생각 반복 기록 감지, 1단계 5장). 고르면 fillInto 단계에 그 생각을 채운다
+  z.object({ ...base, type: z.literal('thoughtSelect'), fillInto: id }),
 ]);
 
 const variant = z.object({
@@ -88,8 +92,8 @@ export const moduleSchema = z.object({
   // 저녁 기록(JR01)처럼 전후 점수가 없는 모듈은 비워 둔다
   preMeasure: measure.optional(),
   postMeasure: measure.optional(),
-  // 완료하면 이 모듈의 답을 따로 저장할 곳
-  record: z.literal('journal').optional(),
+  // 완료하면 이 모듈의 답을 따로 저장할 곳 (src/player/records.ts)
+  record: z.enum(['journal', 'thought', 'approach', 'value']).optional(),
   variants: z.object({ minimal: variant, basic: variant, extended: variant.optional() }),
   outro: z.object({
     message: z.string(),

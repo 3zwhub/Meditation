@@ -1,6 +1,6 @@
 {
   "id": "CB02",
-  "contentVersion": 1,
+  "contentVersion": 2,
   "name": "간이 사고기록지",
   "summary": "걱정되는 예측이 실제로 얼마나 그럴 법한지, 일어나면 어떻게 할지 따져봐요.",
   "category": "cbt",
@@ -46,6 +46,11 @@
       "estimatedSec": 170,
       "steps": [
         {
+          "id": "thoughtSelect",
+          "type": "thoughtSelect",
+          "fillInto": "prediction"
+        },
+        {
           "id": "prediction",
           "type": "text",
           "label": "걱정되는 일을 예측 문장으로 적어 보세요. (\"~할 것이다\")",
@@ -85,6 +90,11 @@
       "durationLabel": "5분",
       "estimatedSec": 300,
       "steps": [
+        {
+          "id": "thoughtSelect",
+          "type": "thoughtSelect",
+          "fillInto": "prediction"
+        },
         {
           "id": "situation",
           "type": "text",
@@ -243,5 +253,6 @@
   "references": [
     "hofmann2008",
     "carpenter2018"
-  ]
+  ],
+  "record": "thought"
 }
